@@ -1,18 +1,20 @@
 #!/bin/bash
 # ISSMTCT 2026 · start the local show on this Mac.
-# 1. Gets the latest deck and app (if there is internet).
-# 2. Builds the app and runs it on http://127.0.0.1:4173 (this Mac only).
-# 3. Runs the deck on http://127.0.0.1:4174 (this Mac only).
-# 4. Opens the deck full screen in its own Chrome window. Quit that window with Cmd+Q.
+# 1. Gets the latest deck (this repo) and the latest DEPLOYED app build, if there is internet.
+#    The deployed app build is the "publish-therapy" branch of the app repo (folder public/),
+#    the same files that jano-functional.pages.dev serves. No npm install or build is needed.
+# 2. Runs the app on http://127.0.0.1:4173 and the deck on http://127.0.0.1:4174 (this Mac only).
+# 3. Opens the deck full screen in its own Chrome window. Quit that window with Cmd+Q.
 # Double-click this file in Finder, or run: ./present.command
 # Settings: present.config (next to this file).
 
 DECK_DIR="$(cd "$(dirname "$0")" && pwd)"
-APP_DIR="$HOME/Jano Health/ehr-prototype"
+APP_REPO="$HOME/Jano Health/ehr-prototype"
+APP_BRANCH="publish-therapy"
+APP_SUBDIR="public"
+APP_CACHE="$HOME/Jano Health/.issmtct-app"
 APP_PORT=4173
 DECK_PORT=4174
-APP_BUILD="npm run build"
-APP_SERVE="npm run preview -- --host 127.0.0.1 --port $APP_PORT --strictPort"
 [ -f "$DECK_DIR/present.config" ] && source "$DECK_DIR/present.config"
 
 say_step() { printf "\n\033[1m%s\033[0m\n" "$1"; }
@@ -25,35 +27,39 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-say_step "1/5 Get the latest deck"
+say_step "1/4 Get the latest deck"
 git -C "$DECK_DIR" pull --ff-only 2>/dev/null && echo "Deck is up to date." || echo "No update (no internet or local changes). Using the deck on this Mac."
 
-say_step "2/5 Get the latest app"
-if [ ! -d "$APP_DIR" ]; then echo "App folder not found: $APP_DIR. Set APP_DIR in present.config."; exit 1; fi
-git -C "$APP_DIR" pull --ff-only 2>/dev/null && echo "App is up to date." || echo "No update (no internet or local changes). Using the app on this Mac."
-LOCK_HASH="$(shasum "$APP_DIR/package-lock.json" 2>/dev/null | cut -c1-40)"
-if [ ! -d "$APP_DIR/node_modules" ] || [ "$(cat "$APP_DIR/node_modules/.jano-lock-hash" 2>/dev/null)" != "$LOCK_HASH" ]; then
-  echo "Installing app packages..."
-  (cd "$APP_DIR" && npm ci) && echo "$LOCK_HASH" > "$APP_DIR/node_modules/.jano-lock-hash" || echo "Install failed. Trying with the packages on this Mac."
+say_step "2/4 Get the latest deployed app"
+if [ ! -d "$APP_REPO/.git" ] && [ ! -f "$APP_REPO/.git" ]; then echo "App repo not found: $APP_REPO. Set APP_REPO in present.config."; exit 1; fi
+git -C "$APP_REPO" fetch origin "$APP_BRANCH" 2>/dev/null && echo "Fetched the latest $APP_BRANCH." || echo "No update (no internet). Using the last $APP_BRANCH on this Mac."
+if git -C "$APP_REPO" rev-parse --verify -q "origin/$APP_BRANCH" >/dev/null; then
+  rm -rf "$APP_CACHE.new" && mkdir -p "$APP_CACHE.new"
+  if git -C "$APP_REPO" archive "origin/$APP_BRANCH" "$APP_SUBDIR" | tar -x -C "$APP_CACHE.new"; then
+    rm -rf "$APP_CACHE" && mv "$APP_CACHE.new" "$APP_CACHE"
+  else
+    rm -rf "$APP_CACHE.new"; echo "Could not unpack $APP_BRANCH. Using the last copy."
+  fi
 fi
+if [ ! -f "$APP_CACHE/$APP_SUBDIR/index.html" ]; then echo "No app build found in $APP_CACHE. Connect to the internet once and run this again."; exit 1; fi
+VERSION="$(grep -o '"tag": *"[^"]*"' "$APP_CACHE/$APP_SUBDIR/build.json" 2>/dev/null | sed 's/.*"\([^"]*\)"$/\1/')"
+echo "App build: ${VERSION:-unknown}"
 
-say_step "3/5 Build the app"
-(cd "$APP_DIR" && eval "$APP_BUILD") || echo "Build failed. Using the last build, if there is one."
-
-say_step "4/5 Start the app and the deck"
-if up "http://127.0.0.1:$APP_PORT/"; then echo "The app is already running on port $APP_PORT."; else
-  (cd "$APP_DIR" && eval "$APP_SERVE" > /tmp/jano-app.log 2>&1) & PIDS+=($!); STARTED_PORTS+=("$APP_PORT")
+say_step "3/4 Start the app and the deck"
+if up "http://127.0.0.1:$APP_PORT/"; then echo "Port $APP_PORT is already in use. Stop that server, or the deck shows it instead."; else
+  node "$DECK_DIR/scripts/serve.mjs" "$APP_CACHE/$APP_SUBDIR" "$APP_PORT" --spa > /tmp/jano-app.log 2>&1 & PIDS+=($!); STARTED_PORTS+=("$APP_PORT")
 fi
 if up "http://127.0.0.1:$DECK_PORT/"; then echo "The deck is already running on port $DECK_PORT."; else
   node "$DECK_DIR/scripts/serve.mjs" "$DECK_DIR/docs" "$DECK_PORT" > /tmp/jano-deck.log 2>&1 & PIDS+=($!); STARTED_PORTS+=("$DECK_PORT")
 fi
-for i in $(seq 1 40); do up "http://127.0.0.1:$APP_PORT/" && up "http://127.0.0.1:$DECK_PORT/" && break; sleep 0.5; done
+for i in $(seq 1 20); do up "http://127.0.0.1:$APP_PORT/" && up "http://127.0.0.1:$DECK_PORT/" && break; sleep 0.5; done
 up "http://127.0.0.1:$APP_PORT/" && echo "App:  http://127.0.0.1:$APP_PORT/  OK" || echo "App did not start. See /tmp/jano-app.log"
 up "http://127.0.0.1:$DECK_PORT/" && echo "Deck: http://127.0.0.1:$DECK_PORT/  OK" || echo "Deck did not start. See /tmp/jano-deck.log"
 
-say_step "5/5 Open the deck full screen"
+say_step "4/4 Open the deck full screen"
 URL="http://127.0.0.1:$DECK_PORT/"
-if [ -d "/Applications/Google Chrome.app" ]; then
+if [ "${OPEN_BROWSER:-1}" = "0" ]; then echo "Open $URL yourself."
+elif [ -d "/Applications/Google Chrome.app" ]; then
   open -na "Google Chrome" --args --user-data-dir="$HOME/.jano-present-chrome" --no-first-run --kiosk "$URL"
   echo "Chrome opened in full screen. Quit it with Cmd+Q."
 else

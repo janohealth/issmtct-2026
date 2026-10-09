@@ -30,12 +30,12 @@ Manual steps for an agent:
 
 ## Present on the MacBook (local, no internet)
 
-1. Before the talk, with internet: double-click `present.command`. It gets the latest deck and app, builds the app and starts both.
+1. Before the talk, with internet: double-click `present.command`. It gets the latest deck and the latest deployed app build (branch `publish-therapy` of `ehr-prototype`, folder `public/`). Then it serves both on this Mac. There is no npm install and no build.
 2. The deck opens full screen in its own Chrome window. Leave it open.
 3. With no internet, `present.command` still works. It uses the last copies on the Mac.
 4. To stop: press Cmd+Q in the deck window, then Ctrl+C in the Terminal window.
 
-The first time only: right-click `present.command` › Open (macOS asks to confirm). Set the app folder in `present.config`.
+The first time only: right-click `present.command` › Open (macOS asks to confirm). The Mac needs Node.js and git access to `janohealth/jano-ehr-prototype`. Settings are in `present.config`.
 
 ## Present on the iPad (online)
 

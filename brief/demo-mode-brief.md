@@ -21,7 +21,7 @@ When the presenter has a trackpad, the presenter can also use the app by hand. D
 | Deck (online) | `https://janohealth.github.io/issmtct-2026/` | iPad and backup |
 | Deck (local, on stage) | `http://127.0.0.1:4174/` | MacBook, no internet |
 | App (online) | `https://jano-functional.pages.dev/` | Deck online uses this |
-| App (local, on stage) | `http://127.0.0.1:4173/` | Deck local uses this |
+| App (local, on stage) | `http://127.0.0.1:4173/` | The latest `publish-therapy` build (folder `public/`), served by the MacBook. No build step. |
 
 1. The deck loads the app in an iframe on the "Live demo" slide.
 2. The clicker sends keys to the deck: PageDown, PageUp, ArrowRight, ArrowLeft.
@@ -29,13 +29,15 @@ When the presenter has a trackpad, the presenter can also use the app by hand. D
 4. The app does the next step and sends back its state.
 5. After the last step, the next clicker press moves the deck to the next slide.
 
-We always use the latest app. Online, the deck uses the latest deploy. On stage, the MacBook pulls the latest `main` and builds it locally before the talk.
+We always use the latest app. Online, the deck uses the latest deploy. On stage, the MacBook fetches the latest `publish-therapy` branch and serves its `public/` folder. These are the same files that the deploy serves.
 
 ## 3. Facts about the app today (checked 9 Oct 2026)
 
 - The app runs with no server calls. It keeps data in `localStorage`, key `jano.therapy.workspace.v1`.
 - The app loads fonts from Google Fonts. With no internet, the fonts change.
 - The app has no service worker. The iPad home-screen app does not open with no internet.
+- Some features call the hosted scribe and AI service (`jano-demo-scribe…workers.dev`), for example Ask Jano. With no internet, these calls fail.
+- The deployed build is on branch `publish-therapy`, folder `public/` (`therapy-v13` on 9 Oct). Its source branch is `functional-medicine`.
 - The app does not block iframes (no `X-Frame-Options`, no `frame-ancestors`). Keep it like this, or use the CSP in R10.
 
 ## 4. Requirements
@@ -62,15 +64,9 @@ We always use the latest app. Online, the deck uses the latest deploy. On stage,
 ### Embedding, offline and speed
 
 - **R10. Frames.** If you add a Content Security Policy, use `frame-ancestors 'self' https://janohealth.github.io http://127.0.0.1:4174 http://localhost:4174`.
-- **R11. Offline.** The local build must work with no internet. Host the fonts in the app (for example, Fontsource). Do not load files from other sites.
+- **R11. Offline.** The deployed build must work with no internet. Host the fonts in the app (for example, Fontsource). Do not load files from other sites. In demo mode, do not call the scribe or AI service. Use fixture responses (R16).
 - **R12. Offline on iPad (phase 3).** Add a service worker and a web manifest. Then the iPad home-screen app opens with no internet.
-- **R13. Local run.** These commands must work on the MacBook:
-  ```
-  npm ci
-  npm run build
-  npm run preview -- --host 127.0.0.1 --port 4173 --strictPort
-  ```
-  Put them in the README.
+- **R13. Local run.** Keep `publish-therapy/public` a complete static build. The MacBook serves it with a small static server. Unknown paths with no file extension get `index.html`. Do not make demo mode need Cloudflare-only features (Functions, `_redirects`, headers).
 - **R14. Speed.** The first screen shows in less than 2 s on the MacBook in local mode. One step (with no typing) shows in less than 300 ms. Do not let the page jump.
 - **R15. Sizes.** Test at 1440×810 and 1920×1080 in Chrome on the MacBook. Test at 1180×820 in Safari on the iPad, in landscape.
 
