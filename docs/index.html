@@ -1,0 +1,1003 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>ISSMTCT 2026 · Jano Health</title>
+<style>
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:500;font-display:block;src:url(fonts/montserrat-latin-500-normal.woff2) format('woff2')}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:block;src:url(fonts/montserrat-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:block;src:url(fonts/montserrat-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:block;src:url(fonts/montserrat-latin-800-normal.woff2) format('woff2')}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:400;font-display:block;src:url(fonts/figtree-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:500;font-display:block;src:url(fonts/figtree-latin-500-normal.woff2) format('woff2')}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:600;font-display:block;src:url(fonts/figtree-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:700;font-display:block;src:url(fonts/figtree-latin-700-normal.woff2) format('woff2')}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#0d0d0d;overflow:hidden;font-family:'Figtree',Arial,sans-serif;color:#141414;-webkit-text-size-adjust:100%}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0}
+#stage>section{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;visibility:hidden;opacity:0;transition:opacity .45s ease}
+#stage>section.on{visibility:visible;opacity:1;z-index:2}
+#stage>section.off{visibility:visible;opacity:1;z-index:1;transition:none}
+#stage>section.instant{transition:none}
+#stage>section:not([style*="display"]),#stage div:not([style*="display"]){display:flex;flex-direction:column}
+h1{font-size:96px;font-weight:600;line-height:1.1}h2{font-size:64px;font-weight:600;line-height:1.15}h3{font-size:44px;font-weight:600;line-height:1.2}
+p{font-size:32px;font-weight:400;line-height:1.4}
+aside{display:none!important}
+img{display:block}
+a{color:inherit}
+table{width:100%;border-collapse:collapse}th,td{padding:.35em .6em;text-align:left;vertical-align:top;border-bottom:1px solid rgba(20,20,20,.14)}th{font-weight:700}
+ul,ol{padding-left:1.2em}
+svg.xi{display:block;flex:none}
+.bld{transition:opacity .5s ease,translate .6s cubic-bezier(.2,.8,.2,1),scale .5s cubic-bezier(.3,1.4,.5,1)}
+.bo{opacity:0!important}.bo.fx-rise{translate:0 48px}.bo.fx-drop{translate:0 -48px}.bo.fx-left{translate:-64px 0}.bo.fx-right{translate:64px 0}.bo.fx-pop{scale:.55}.bo.fx-scale{scale:.85}
+.notrans,.notrans *{transition:none!important}
+.live{position:absolute;overflow:hidden;background:#fff}
+.live iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;background:#fff}
+.live .wait{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:48px;background:#F5F5F3}
+.live .wait b{font-family:'Montserrat',Arial,sans-serif;font-size:34px;color:#141414}.live .wait span{font-size:26px;color:#4A4A48;line-height:1.4}.live .wait code{font-size:24px;background:#fff;border:2px solid #E6E3DF;border-radius:10px;padding:6px 14px;color:#C71212}
+.live .badge{position:absolute;right:14px;top:12px;z-index:3;font:700 20px/1 'Montserrat',Arial,sans-serif;color:#fff;background:rgba(20,20,20,.72);border-radius:999px;padding:8px 14px;pointer-events:none;opacity:0;transition:opacity .3s}
+.live .badge.show{opacity:1}
+#nav{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:20;display:flex;gap:6px;align-items:center;padding:6px;border-radius:999px;background:rgba(20,20,20,.72);color:#fff;font:600 14px/1 'Figtree',Arial,sans-serif;opacity:0;transition:opacity .3s}
+#nav.show,body.touch #nav{opacity:1}
+#nav button{all:unset;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}#nav button:hover{background:rgba(255,255,255,.16)}
+#nav span{padding:0 6px;min-width:56px;text-align:center}
+#jump{position:fixed;left:50%;top:24px;transform:translateX(-50%);z-index:21;background:rgba(20,20,20,.85);color:#fff;font:700 28px/1 'Montserrat',Arial,sans-serif;padding:12px 22px;border-radius:12px;display:none}
+#blank{position:fixed;inset:0;background:#000;z-index:25;display:none}
+#notes{position:fixed;left:0;right:0;bottom:0;height:38vh;z-index:19;background:rgba(15,15,15,.94);color:#f2f2f2;font:16px/1.5 'Figtree',Arial,sans-serif;padding:16px 24px;overflow:auto;white-space:pre-wrap;display:none}
+#panel{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;font:15px/1.4 'Figtree',Arial,sans-serif}
+#panel .box{background:#fff;color:#141414;border-radius:16px;padding:24px 28px;width:min(640px,92vw);max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+#panel h4{font:800 20px 'Montserrat',Arial,sans-serif}#panel label{display:flex;flex-direction:column;gap:4px;font-weight:600}
+#panel input[type=text],#panel input[type=number]{font:15px 'Figtree',Arial,sans-serif;padding:8px 10px;border:1.5px solid #ccc;border-radius:8px}
+#panel .row{display:flex;gap:10px;flex-wrap:wrap}#panel .row label{flex:1;min-width:150px}
+#panel .chk{flex-direction:row;align-items:center;gap:8px;font-weight:500}
+#panel .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
+#panel button{font:700 15px 'Figtree',Arial,sans-serif;padding:9px 16px;border-radius:9px;border:0;cursor:pointer;background:#EDEDEA}#panel button.pri{background:#E54B4B;color:#fff}
+#panel .keys{color:#5E5E5B;font-size:13px;border-top:1px solid #eee;padding-top:8px}
+#panel a{color:#C71212}
+#ver{color:#8a8a86;font-size:12px}
+</style>
+</head>
+<body>
+<div id="stage">
+<section id="T01" data-transition="fade" style="background:#FFFFFF;color:#141414;font-family:'Figtree', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between;gap:40px" data-hidden="0">
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#C71212">XVIII ISSMTCT Conference &amp; Workshop · Goa · 9–11 October 2026</p>
+<div style="display:flex;flex-direction:column;gap:32px;width:1100px">
+<h1 style="font-family:'Montserrat', Arial, sans-serif;font-size:84px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#141414">One Patient.<br>Twenty Variables.<br>One Clinical Story</h1>
+<div style="width:120px;height:8px;background:#E54B4B;border-radius:4px"></div>
+<p style="font-size:44px;line-height:1.25;color:#4A4A48">How AI can make complex functional medicine manageable</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:32px;font-weight:700;color:#141414">Sudarshan Gopalan</p>
+<p style="font-size:24px;color:#6B6B68">CEO and co-founder, Jano Health</p>
+</div>
+<svg aria-label="Twenty points joined by one line" width="560" height="530" viewBox="0 0 560 530" style="position:absolute;left:1232px;top:260px;width:560px;height:530px"><path d="M80 70 L500 70 C550 70 550 200 500 200 L60 200 C10 200 10 330 80 330 L500 330 C550 330 550 460 500 460 L140 460" fill="none" stroke="#E54B4B" stroke-width="4" stroke-linecap="round"/><g fill="#FFFFFF" stroke="#141414" stroke-width="3"><circle cx="80" cy="70" r="13"/><circle cx="185" cy="70" r="13"/><circle cx="290" cy="70" r="13"/><circle cx="395" cy="70" r="13"/><circle cx="500" cy="70" r="13"/><circle cx="500" cy="200" r="13"/><circle cx="412" cy="200" r="13"/><circle cx="324" cy="200" r="13"/><circle cx="236" cy="200" r="13"/><circle cx="148" cy="200" r="13"/><circle cx="60" cy="200" r="13"/><circle cx="80" cy="330" r="13"/><circle cx="185" cy="330" r="13"/><circle cx="290" cy="330" r="13"/><circle cx="395" cy="330" r="13"/><circle cx="500" cy="330" r="13"/><circle cx="500" cy="460" r="13"/><circle cx="380" cy="460" r="13"/><circle cx="260" cy="460" r="13"/></g><circle cx="140" cy="460" r="18" fill="#E54B4B"/></svg>
+<aside></aside>
+</section>
+<section id="V1" data-transition="magic" style="background:#F5F5F3;color:#141414;font-family:'Figtree', Arial, sans-serif;padding:72px 128px 160px;display:flex;flex-direction:column;gap:8px" data-hidden="0">
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#C71212">One patient · Nikhil, synthetic</p>
+<h2 style="font-family:'Montserrat', Arial, sans-serif;font-size:56px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#141414">Twenty variables to connect.</h2>
+<div id="v07" data-build-in="pop 1 auto" style="position:absolute;left:1080px;top:212px;width:372px;display:flex;align-items:center;justify-content:center;background:#E6EDF5;border:2px solid #D3DFEC;border-radius:999px;padding:18px 30px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:28px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Meds and supplements</p></div>
+<div id="v19" data-build-in="pop 2 auto" style="position:absolute;left:500px;top:612px;width:318px;display:flex;align-items:center;justify-content:center;background:#141414;border:2px solid #141414;border-radius:44px 44px 44px 12px;padding:22px 36px;box-shadow:0 10px 24px rgba(20,20,20,0.16)"><p style="font-size:34px;font-weight:600;line-height:1.2;color:#FFFFFF;white-space:nowrap">Missed visits</p></div>
+<div id="v03" data-build-in="pop 3 auto" style="position:absolute;left:840px;top:372px;width:280px;display:flex;align-items:center;justify-content:center;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:14px 24px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Heavy metal panel</p></div>
+<div id="v13" data-build-in="pop 4 auto" style="position:absolute;left:410px;top:340px;width:372px;display:flex;align-items:center;justify-content:center;background:#FCE4E2;border:2px solid #F7D3CF;border-radius:44px 44px 44px 12px;padding:22px 36px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:34px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Patient concerns</p></div>
+<div id="v10" data-build-in="pop 5 auto" style="position:absolute;left:250px;top:790px;width:372px;display:flex;align-items:center;justify-content:center;background:#F4EBDD;border:2px solid #EADBC4;border-radius:999px;padding:18px 30px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:28px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Diet, gut, lifestyle</p></div>
+<div id="v01" data-build-in="pop 6 auto" style="position:absolute;left:150px;top:220px;width:480px;display:flex;align-items:center;justify-content:center;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:22px 36px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:34px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Ferritin, iron studies</p></div>
+<div id="v15" data-build-in="pop 7 auto" style="position:absolute;left:1560px;top:384px;width:228px;display:flex;align-items:center;justify-content:center;background:#E6EDF5;border:2px solid #D3DFEC;border-radius:999px;padding:14px 24px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Team handoffs</p></div>
+<div id="v20" data-build-in="pop 8 auto" style="position:absolute;left:1085px;top:500px;width:296px;display:flex;align-items:center;justify-content:center;background:#F4EBDD;border:2px solid #EADBC4;border-radius:999px;padding:18px 30px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:28px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Program revenue</p></div>
+<div id="v06" data-build-in="pop 9 auto" style="position:absolute;left:880px;top:650px;width:280px;display:flex;align-items:center;justify-content:center;background:#FCE4E2;border:2px solid #F7D3CF;border-radius:999px;padding:14px 24px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Mineral repletion</p></div>
+<div id="v04" data-build-in="pop 10 auto" style="position:absolute;left:560px;top:470px;width:462px;display:flex;align-items:center;justify-content:center;background:#E54B4B;border:2px solid #E54B4B;border-radius:44px 44px 12px 44px;padding:22px 36px;box-shadow:0 10px 24px rgba(229,75,75,0.25)"><p style="font-size:34px;font-weight:600;line-height:1.2;color:#FFFFFF;white-space:nowrap">Chelator, dose, route</p></div>
+<div id="v16" data-build-in="pop 11 auto" style="position:absolute;left:128px;top:360px;width:228px;display:flex;align-items:center;justify-content:center;background:#F4EBDD;border:2px solid #EADBC4;border-radius:999px;padding:14px 24px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">New enquiries</p></div>
+<div id="v12" data-build-in="pop 12 auto" style="position:absolute;left:690px;top:250px;width:326px;display:flex;align-items:center;justify-content:center;background:#FCE4E2;border:2px solid #F7D3CF;border-radius:999px;padding:18px 30px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:28px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Next-day check-in</p></div>
+<div id="v08" data-build-in="pop 13 auto" style="position:absolute;left:700px;top:770px;width:280px;display:flex;align-items:center;justify-content:center;background:#E6EDF5;border:2px solid #D3DFEC;border-radius:999px;padding:14px 24px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Contraindications</p></div>
+<div id="v05" data-build-in="pop 14 auto" style="position:absolute;left:1170px;top:344px;width:356px;display:flex;align-items:center;justify-content:center;background:#E3EFE6;border:2px solid #CFE3D5;border-radius:999px;padding:18px 30px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:28px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Infusion rate, time</p></div>
+<div id="v18" data-build-in="pop 15 auto" style="position:absolute;left:1230px;top:620px;width:312px;display:flex;align-items:center;justify-content:center;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:18px 30px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:28px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Sessions vs plan</p></div>
+<div id="v02" data-build-in="pop 16 auto" style="position:absolute;left:128px;top:640px;width:312px;display:flex;align-items:center;justify-content:center;background:#E3EFE6;border:2px solid #CFE3D5;border-radius:999px;padding:18px 30px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:28px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Creatinine, eGFR</p></div>
+<div id="v09" data-build-in="pop 17 auto" style="position:absolute;left:190px;top:492px;width:306px;display:flex;align-items:center;justify-content:center;background:#E6EDF5;border:2px solid #D3DFEC;border-radius:34px 34px 10px 34px;padding:14px 24px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Vitals: BP, glucose</p></div>
+<div id="v14" data-build-in="pop 18 auto" style="position:absolute;left:1050px;top:800px;width:282px;display:flex;align-items:center;justify-content:center;background:#FCE4E2;border:2px solid #F7D3CF;border-radius:36px 36px 36px 10px;padding:18px 30px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:28px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Shared reports</p></div>
+<div id="v11" data-build-in="pop 19 auto" style="position:absolute;left:1450px;top:478px;width:266px;display:flex;align-items:center;justify-content:center;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:14px 24px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">Pre-session prep</p></div>
+<div id="v17" data-build-in="pop 20 auto" style="position:absolute;left:1530px;top:262px;width:214px;display:flex;align-items:center;justify-content:center;background:#E3EFE6;border:2px solid #CFE3D5;border-radius:30px 30px 10px 30px;padding:14px 24px;box-shadow:0 10px 24px rgba(20,20,20,0.08)"><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;white-space:nowrap">First visits</p></div>
+<p style="position:absolute;left:128px;bottom:64px;width:1500px;font-size:24px;color:#6B6B68">Illustration of what a clinic tracks. Not a protocol, a score or clinical advice.</p>
+<aside></aside>
+</section>
+<section id="V2" data-transition="magic" style="background:#f5f5f3" data-hidden="0">
+  <div id="pn-clin" style="position:absolute; top:300px; left:128px; width:860px; height:458px; display:flex; flex-direction:column; background:#ffffff; border-top:12px solid #2f6db5; border-radius:20px; box-shadow:0 10px 30px #14141414">
+  </div>
+  <div id="pn-comm" style="position:absolute; top:300px; left:1010px; width:380px; height:458px; display:flex; flex-direction:column; background:#ffffff; border-top:12px solid #b45309; border-radius:20px; box-shadow:0 10px 30px #14141414">
+  </div>
+  <div id="pn-grow" style="position:absolute; top:300px; left:1412px; width:380px; height:458px; display:flex; flex-direction:column; background:#ffffff; border-top:12px solid #0b7a45; border-radius:20px; box-shadow:0 10px 30px #14141414">
+  </div>
+  <p id="hd-clin" style="position:absolute; top:328px; left:152px; width:812px; font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#2f6db5">Clinical</p>
+  <p id="hd-comm" style="position:absolute; top:328px; left:1034px; width:332px; font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#b45309">Communication</p>
+  <p id="hd-grow" style="position:absolute; top:328px; left:1436px; width:332px; font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#0b7a45">Growth</p>
+  <div id="v01" style="position:absolute; top:380px; left:152px; width:400px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e8f0fa; border:2px solid #d3dfec; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Ferritin, iron studies</p>
+  </div>
+  <div id="v02" style="position:absolute; top:454px; left:152px; width:400px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e8f0fa; border:2px solid #d3dfec; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Creatinine, eGFR</p>
+  </div>
+  <div id="v03" style="position:absolute; top:528px; left:152px; width:400px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e8f0fa; border:2px solid #d3dfec; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Heavy metal panel</p>
+  </div>
+  <div id="v04" style="position:absolute; top:602px; left:152px; width:400px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e8f0fa; border:2px solid #d3dfec; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Chelator, dose, route</p>
+  </div>
+  <div id="v05" style="position:absolute; top:676px; left:152px; width:400px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e8f0fa; border:2px solid #d3dfec; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Infusion rate, time</p>
+  </div>
+  <div id="v06" style="position:absolute; top:380px; left:564px; width:400px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e8f0fa; border:2px solid #d3dfec; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Mineral repletion</p>
+  </div>
+  <div id="v07" style="position:absolute; top:454px; left:564px; width:400px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e8f0fa; border:2px solid #d3dfec; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Meds and supplements</p>
+  </div>
+  <div id="v08" style="position:absolute; top:528px; left:564px; width:400px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e8f0fa; border:2px solid #d3dfec; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Contraindications</p>
+  </div>
+  <div id="v09" style="position:absolute; top:602px; left:564px; width:400px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e8f0fa; border:2px solid #d3dfec; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Vitals: BP, glucose</p>
+  </div>
+  <div id="v10" style="position:absolute; top:676px; left:564px; width:400px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e8f0fa; border:2px solid #d3dfec; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Diet, gut, lifestyle</p>
+  </div>
+  <div id="v11" style="position:absolute; top:380px; left:1034px; width:332px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#fdf1e3; border:2px solid #eadbc4; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Pre-session prep</p>
+  </div>
+  <div id="v12" style="position:absolute; top:454px; left:1034px; width:332px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#fdf1e3; border:2px solid #eadbc4; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Next-day check-in</p>
+  </div>
+  <div id="v13" style="position:absolute; top:528px; left:1034px; width:332px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#fdf1e3; border:2px solid #eadbc4; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Patient concerns</p>
+  </div>
+  <div id="v14" style="position:absolute; top:602px; left:1034px; width:332px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#fdf1e3; border:2px solid #eadbc4; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Shared reports</p>
+  </div>
+  <div id="v15" style="position:absolute; top:676px; left:1034px; width:332px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#fdf1e3; border:2px solid #eadbc4; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Team handoffs</p>
+  </div>
+  <div id="v16" style="position:absolute; top:380px; left:1436px; width:332px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e6f4ec; border:2px solid #cfe3d5; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">New enquiries</p>
+  </div>
+  <div id="v17" style="position:absolute; top:454px; left:1436px; width:332px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e6f4ec; border:2px solid #cfe3d5; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">First visits</p>
+  </div>
+  <div id="v18" style="position:absolute; top:528px; left:1436px; width:332px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e6f4ec; border:2px solid #cfe3d5; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Sessions vs plan</p>
+  </div>
+  <div id="v19" style="position:absolute; top:602px; left:1436px; width:332px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e6f4ec; border:2px solid #cfe3d5; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Missed visits</p>
+  </div>
+  <div id="v20" style="position:absolute; top:676px; left:1436px; width:332px; height:60px; display:flex; flex-direction:row; align-items:center; padding:0 22px; background:#e6f4ec; border:2px solid #cfe3d5; border-radius:256px">
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:600; line-height:1.2; white-space:nowrap; color:#141414">Program revenue</p>
+  </div>
+  <p style="position:absolute; top:796px; left:128px; width:1664px; font-family:Montserrat, Arial, sans-serif; font-size:36px; font-weight:700; line-height:1.2; text-align:center; color:#141414">Each critical. Each needs to reflect how you work.</p>
+  <h2 id="e28-15w33nl" style="position:absolute; top:128px; left:50%; width:1664px; font-family:Montserrat, Arial, sans-serif; font-size:56px; font-weight:700; line-height:1.1; letter-spacing:-1px; color:#141414; transform:translateX(-50%)">They fall into three jobs.</h2>
+  <aside></aside>
+</section>
+<section id="T02" data-transition="fade" style="background:#f5f5f3" data-hidden="0">
+  <div id="pn-clin" style="position:absolute; top:232px; left:128px; width:533px; height:480px; display:flex; flex-direction:column; background:#ffffff; border-top:12px solid #2f6db5; border-radius:20px; box-shadow:0 10px 30px #14141414">
+  </div>
+  <div id="pn-comm" style="position:absolute; top:232px; left:693px; width:533px; height:480px; display:flex; flex-direction:column; background:#ffffff; border-top:12px solid #b45309; border-radius:20px; box-shadow:0 10px 30px #14141414">
+  </div>
+  <div id="pn-grow" style="position:absolute; top:232px; left:1258px; width:534px; height:480px; display:flex; flex-direction:column; background:#ffffff; border-top:12px solid #0b7a45; border-radius:20px; box-shadow:0 10px 30px #14141414">
+  </div>
+  <div id="e4-1ngjlcx" style="position:absolute; top:232px; left:128px; width:533px; display:flex; flex-direction:column; gap:20px; padding:52px 40px 40px">
+    <div style="width:64px; height:64px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#e8f0fa; border-radius:32px">
+      <svg class="xi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:36px; height:36px; color:#2f6db5"><circle cx="12" cy="12" r="10" />
+  <path d="m16 9-5.5 5.5L8 12" /></svg>
+    </div>
+    <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#2f6db5">Clinical</p>
+    <h3 style="font-family:Montserrat, Arial, sans-serif; font-size:44px; font-weight:700; line-height:1.15; color:#141414">Run every protocol perfectly</h3>
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:28px; line-height:1.4; color:#4a4a48">The same standard from you, your nurses, your technicians and your patient.</p>
+  </div>
+  <div id="e5-1ngjlcx" style="position:absolute; top:232px; left:693px; width:533px; display:flex; flex-direction:column; gap:20px; padding:52px 40px 40px">
+    <div style="width:64px; height:64px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#fdf1e3; border-radius:32px">
+      <svg class="xi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:36px; height:36px; color:#b45309"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" /></svg>
+    </div>
+    <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#b45309">Communication</p>
+    <h3 style="font-family:Montserrat, Arial, sans-serif; font-size:44px; font-weight:700; line-height:1.15; color:#141414">Talk without chasing</h3>
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:28px; line-height:1.4; color:#4a4a48">Every message reaches the right person, with the patient's context.</p>
+  </div>
+  <div id="e6-1ngjlcx" style="position:absolute; top:232px; left:1258px; width:534px; display:flex; flex-direction:column; gap:20px; padding:52px 40px 40px">
+    <div style="width:64px; height:64px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#e6f4ec; border-radius:32px">
+      <svg class="xi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:36px; height:36px; color:#0b7a45"><path d="M3 3v16a2 2 0 0 0 2 2h16" />
+  <path d="M18 17V9" />
+  <path d="M13 17V5" />
+  <path d="M8 17v-3" /></svg>
+    </div>
+    <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#0b7a45">Growth</p>
+    <h3 style="font-family:Montserrat, Arial, sans-serif; font-size:44px; font-weight:700; line-height:1.15; color:#141414">Grow the practice</h3>
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:28px; line-height:1.4; color:#4a4a48">Turn enquiries into visits. Keep patients on their program.</p>
+  </div>
+  <div id="e7-1ngjlcx" style="position:absolute; top:744px; left:128px; width:1664px; display:flex; flex-direction:row; gap:24px; align-items:center; padding:28px 40px; background:#141414; border-radius:20px">
+    <svg class="xi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:44px; height:44px; color:#f28b8b"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
+    <p style="flex:1; font-family:Figtree, Arial, sans-serif; font-size:32px; line-height:1.35; color:#ffffff">And for the MedTech companies here: a way to bring your protocols to every clinic.</p>
+    <p style="padding:6px 18px; font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; color:#ffffff; background:#c71212; border-radius:20px">Partners</p>
+  </div>
+  <p id="e8-1ngjlcx" style="position:absolute; bottom:64px; left:128px; width:1100px; font-family:Figtree, Arial, sans-serif; font-size:24px; color:#6b6b68">Jano Health · ISSMTCT 2026</p>
+  <h2 id="p625250595c77r0-8ab8a64d" style="position:absolute; top:128px; left:50%; width:1664px; font-family:Montserrat, Arial, sans-serif; font-size:56px; font-weight:700; line-height:1.1; letter-spacing:-1px; color:#141414; transform:translateX(-50%)">Three pillars of running a practice.</h2>
+  <aside></aside>
+</section>
+<section id="SC" data-transition="fade" style="background:#FFFFFF;color:#141414;font-family:'Figtree', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:8px" data-hidden="0">
+<p style="position:absolute;left:128px;top:120px;width:260px;font-family:'Montserrat', Arial, sans-serif;font-size:300px;font-weight:800;line-height:1;letter-spacing:-8px;color:#E54B4B">1</p>
+<div style="position:absolute;left:400px;top:150px;width:1392px;display:flex;flex-direction:column;gap:14px">
+<h1 style="font-family:'Montserrat', Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-3px;color:#141414">Clinical</h1>
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:48px;font-weight:700;line-height:1.2;color:#4A4A48">Run every protocol perfectly.</p>
+<div style="display:flex;flex-wrap:wrap;gap:14px;padding:24px 0px 0px">
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E8F0FA;border:2px solid #D3DFEC;border-radius:999px;padding:12px 24px">Ferritin, iron studies</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E8F0FA;border:2px solid #D3DFEC;border-radius:999px;padding:12px 24px">Creatinine, eGFR</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E8F0FA;border:2px solid #D3DFEC;border-radius:999px;padding:12px 24px">Heavy metal panel</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E8F0FA;border:2px solid #D3DFEC;border-radius:999px;padding:12px 24px">Chelator, dose, route</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E8F0FA;border:2px solid #D3DFEC;border-radius:999px;padding:12px 24px">Infusion rate, time</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E8F0FA;border:2px solid #D3DFEC;border-radius:999px;padding:12px 24px">Mineral repletion</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E8F0FA;border:2px solid #D3DFEC;border-radius:999px;padding:12px 24px">Meds and supplements</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E8F0FA;border:2px solid #D3DFEC;border-radius:999px;padding:12px 24px">Contraindications</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E8F0FA;border:2px solid #D3DFEC;border-radius:999px;padding:12px 24px">Vitals: BP, glucose</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E8F0FA;border:2px solid #D3DFEC;border-radius:999px;padding:12px 24px">Diet, gut, lifestyle</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;top:952px;width:1664px;height:8px;background:#E54B4B;border-radius:4px"></div>
+<aside></aside>
+</section>
+<section id="C1" data-transition="fade" style="background:#E54B4B;color:#FFFFFF;font-family:'Figtree', Arial, sans-serif;padding:72px 128px 160px;display:flex;flex-direction:column;gap:8px" data-hidden="0">
+<h2 style="position:absolute;left:128px;top:72px;width:960px;font-family:'Montserrat', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-1px;color:#FFFFFF">Your protocol lives in your head.</h2>
+<div style="position:absolute;left:128px;top:262px;width:1664px;height:110px;display:flex;gap:24px;align-items:center;background:rgba(255,255,255,0.14);border-radius:18px;padding:0px 32px"><p style="flex:none;width:250px;font-family:'Montserrat', Arial, sans-serif;font-size:30px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFE1DE">Doctor</p><p style="font-size:44px;font-weight:700;line-height:1.2;color:#FFFFFF;white-space:nowrap">Has his creatinine come in?</p></div>
+<div style="position:absolute;left:128px;top:396px;width:1664px;height:110px;display:flex;gap:24px;align-items:center;background:rgba(255,255,255,0.14);border-radius:18px;padding:0px 32px"><p style="flex:none;width:250px;font-family:'Montserrat', Arial, sans-serif;font-size:30px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFE1DE">Technician</p><p style="font-size:44px;font-weight:700;line-height:1.2;color:#FFFFFF;white-space:nowrap">Which IV today: EDTA or vitamin C?</p></div>
+<div style="position:absolute;left:128px;top:530px;width:1664px;height:110px;display:flex;gap:24px;align-items:center;background:rgba(255,255,255,0.14);border-radius:18px;padding:0px 32px"><p style="flex:none;width:250px;font-family:'Montserrat', Arial, sans-serif;font-size:30px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFE1DE">Nurse</p><p style="font-size:44px;font-weight:700;line-height:1.2;color:#FFFFFF;white-space:nowrap">He feels dizzy. What do I note?</p></div>
+<div style="position:absolute;left:128px;top:664px;width:1664px;height:110px;display:flex;gap:24px;align-items:center;background:rgba(255,255,255,0.14);border-radius:18px;padding:0px 32px"><p style="flex:none;width:250px;font-family:'Montserrat', Arial, sans-serif;font-size:30px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFE1DE">Patient</p><p style="font-size:44px;font-weight:700;line-height:1.2;color:#FFFFFF;white-space:nowrap">Can I take my zinc today?</p></div>
+<img src="assets/2f47456cb4ab3d2e981001df0cb1f777.png" alt="A worried doctor in a white coat holds her head" style="position:absolute;left:1229px;top:440px;width:563px;height:640px;object-fit:contain">
+<div data-build-in="rise 1" style="position:absolute;left:128px;bottom:128px;width:960px;display:flex;background:#FFFFFF;border-radius:20px;padding:24px 32px;box-shadow:0 16px 40px rgba(20,20,20,0.25)"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:36px;font-weight:800;line-height:1.2;color:#C71212">Jano puts your protocol in your team's hands.</p></div>
+<aside></aside>
+</section>
+<section id="CD" data-transition="fade" style="background:#f5f5f3" data-hidden="1">
+  <div id="e1-y34tj6" style="position:absolute; top:0; left:0; width:1920px; height:1080px; display:flex; flex-direction:column; background:#1c1c1e; border-radius:40px; box-shadow:0 16px 40px #14141433">
+  </div>
+  <aside></aside>
+</section>
+<section id="LD" data-transition="fade" style="background:#F5F5F3;color:#141414;font-family:'Figtree', Arial, sans-serif;padding:72px 128px 160px;display:flex;flex-direction:column;gap:8px" data-hidden="0">
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#C71212">Live demo</p>
+<h2 style="font-family:'Montserrat', Arial, sans-serif;font-size:56px;font-weight:800;line-height:1.1;letter-spacing:-1px;color:#141414">Jano, live.</h2>
+<div style="position:absolute;left:128px;top:188px;width:1664px;height:800px;background:#1C1C1E;border-radius:28px;box-shadow:0 16px 40px rgba(20,20,20,0.2)"></div>
+<div class="live" data-live="LD" style="position:absolute;left:144px;top:204px;width:1632px;height:768px;border-radius:16px"></div>
+<aside></aside>
+</section>
+<section id="SM" data-transition="fade" style="background:#FFFFFF;color:#141414;font-family:'Figtree', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:8px" data-hidden="0">
+<p style="position:absolute;left:128px;top:120px;width:260px;font-family:'Montserrat', Arial, sans-serif;font-size:300px;font-weight:800;line-height:1;letter-spacing:-8px;color:#E54B4B">2</p>
+<div style="position:absolute;left:400px;top:150px;width:1392px;display:flex;flex-direction:column;gap:14px">
+<h1 style="font-family:'Montserrat', Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-3px;color:#141414">Communication</h1>
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:48px;font-weight:700;line-height:1.2;color:#4A4A48">Talk without chasing.</p>
+<div style="display:flex;flex-wrap:wrap;gap:14px;padding:24px 0px 0px">
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#FDF1E3;border:2px solid #EADBC4;border-radius:999px;padding:12px 24px">Pre-session prep</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#FDF1E3;border:2px solid #EADBC4;border-radius:999px;padding:12px 24px">Next-day check-in</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#FDF1E3;border:2px solid #EADBC4;border-radius:999px;padding:12px 24px">Patient concerns</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#FDF1E3;border:2px solid #EADBC4;border-radius:999px;padding:12px 24px">Shared reports</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#FDF1E3;border:2px solid #EADBC4;border-radius:999px;padding:12px 24px">Team handoffs</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;top:952px;width:1664px;height:8px;background:#E54B4B;border-radius:4px"></div>
+<aside></aside>
+</section>
+<section id="M1" data-transition="fade" style="background:#E54B4B;color:#FFFFFF;font-family:'Figtree', Arial, sans-serif;padding:72px 128px 160px;display:flex;flex-direction:column;gap:8px" data-hidden="0">
+<div style="position:absolute;left:1270px;top:190px;width:500px;height:500px;background:rgba(255,255,255,0.14);border-radius:250px"></div>
+<h2 style="position:absolute;left:128px;top:72px;width:960px;font-family:'Montserrat', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-1px;color:#FFFFFF">11:14 pm. Your phone buzzes again.</h2>
+<div style="position:absolute;left:128px;top:262px;width:1664px;height:110px;display:flex;gap:24px;align-items:center;background:rgba(255,255,255,0.14);border-radius:18px;padding:0px 32px"><p style="flex:none;width:250px;font-family:'Montserrat', Arial, sans-serif;font-size:30px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFE1DE">Patient</p><p style="font-size:44px;font-weight:700;line-height:1.2;color:#FFFFFF;white-space:nowrap">Pls see this photo. Is it serious?</p></div>
+<div style="position:absolute;left:128px;top:396px;width:1664px;height:110px;display:flex;gap:24px;align-items:center;background:rgba(255,255,255,0.14);border-radius:18px;padding:0px 32px"><p style="flex:none;width:250px;font-family:'Montserrat', Arial, sans-serif;font-size:30px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFE1DE">Lab</p><p style="font-size:44px;font-weight:700;line-height:1.2;color:#FFFFFF;white-space:nowrap">Report attached. 12-page PDF.</p></div>
+<div style="position:absolute;left:128px;top:530px;width:1664px;height:110px;display:flex;gap:24px;align-items:center;background:rgba(255,255,255,0.14);border-radius:18px;padding:0px 32px"><p style="flex:none;width:250px;font-family:'Montserrat', Arial, sans-serif;font-size:30px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFE1DE">Patient</p><p style="font-size:44px;font-weight:700;line-height:1.2;color:#FFFFFF;white-space:nowrap">I can't come on Thursday.</p></div>
+<div style="position:absolute;left:128px;top:664px;width:1664px;height:110px;display:flex;gap:24px;align-items:center;background:rgba(255,255,255,0.14);border-radius:18px;padding:0px 32px"><p style="flex:none;width:250px;font-family:'Montserrat', Arial, sans-serif;font-size:30px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFE1DE">Your staff</p><p style="font-size:44px;font-weight:700;line-height:1.2;color:#FFFFFF;white-space:nowrap">Doctor, who will reply?</p></div>
+<div style="position:absolute;left:1332px;top:150px;width:420px;height:760px;background:#141414;border-radius:56px;box-shadow:0 24px 60px rgba(20,20,20,0.35)"></div>
+<div style="position:absolute;left:1348px;top:166px;width:388px;height:728px;background:#FFFFFF;border-radius:44px;overflow:hidden;display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:16px 28px 8px"><p style="font-size:24px;font-weight:700;line-height:1.2;color:#141414">11:14</p><p style="font-size:24px;font-weight:700;line-height:1.2;color:#141414">4G</p></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 20px 12px;border-bottom:2px solid #EDEDEA"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:32px;font-weight:800;line-height:1.2;color:#141414">Chats</p><p style="font-size:24px;font-weight:700;line-height:1.2;color:#FFFFFF;background:#1F9D55;border-radius:16px;padding:2px 12px">47 unread</p></div>
+<div style="display:flex;gap:12px;align-items:center;padding:12px 18px;border-bottom:2px solid #F5F5F3"><div style="flex:none;width:52px;height:52px;border-radius:26px;background:#2F6DB5;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;line-height:1;color:#FFFFFF">A</p></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="display:flex;justify-content:space-between"><p style="font-size:24px;font-weight:700;line-height:1.2;color:#141414">Asha R.</p><p style="font-size:24px;line-height:1.2;color:#1F9D55">11:14</p></div><div style="display:flex;justify-content:space-between;align-items:center"><p style="font-size:24px;line-height:1.25;color:#5E5E5B">Pls see this photo</p><p style="font-size:24px;font-weight:700;line-height:1.3;color:#FFFFFF;background:#1F9D55;border-radius:16px;padding:0px 10px">3</p></div></div></div>
+<div style="display:flex;gap:12px;align-items:center;padding:12px 18px;border-bottom:2px solid #F5F5F3"><div style="flex:none;width:52px;height:52px;border-radius:26px;background:#C71212;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;line-height:1;color:#FFFFFF">L</p></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="display:flex;justify-content:space-between"><p style="font-size:24px;font-weight:700;line-height:1.2;color:#141414">Lab</p><p style="font-size:24px;line-height:1.2;color:#1F9D55">11:09</p></div><div style="display:flex;justify-content:space-between;align-items:center"><p style="font-size:24px;line-height:1.25;color:#5E5E5B">Report attached</p><p style="font-size:24px;font-weight:700;line-height:1.3;color:#FFFFFF;background:#1F9D55;border-radius:16px;padding:0px 10px">1</p></div></div></div>
+<div style="display:flex;gap:12px;align-items:center;padding:12px 18px;border-bottom:2px solid #F5F5F3"><div style="flex:none;width:52px;height:52px;border-radius:26px;background:#0B7A45;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;line-height:1;color:#FFFFFF">N</p></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="display:flex;justify-content:space-between"><p style="font-size:24px;font-weight:700;line-height:1.2;color:#141414">Nikhil D.</p><p style="font-size:24px;line-height:1.2;color:#1F9D55">10:52</p></div><div style="display:flex;justify-content:space-between;align-items:center"><p style="font-size:24px;line-height:1.25;color:#5E5E5B">Can't come Thursday</p><p style="font-size:24px;font-weight:700;line-height:1.3;color:#FFFFFF;background:#1F9D55;border-radius:16px;padding:0px 10px">1</p></div></div></div>
+<div style="display:flex;gap:12px;align-items:center;padding:12px 18px;border-bottom:2px solid #F5F5F3"><div style="flex:none;width:52px;height:52px;border-radius:26px;background:#7A4EAB;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;line-height:1;color:#FFFFFF">M</p></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="display:flex;justify-content:space-between"><p style="font-size:24px;font-weight:700;line-height:1.2;color:#141414">Meera K.</p><p style="font-size:24px;line-height:1.2;color:#1F9D55">10:31</p></div><div style="display:flex;justify-content:space-between;align-items:center"><p style="font-size:24px;line-height:1.25;color:#5E5E5B">Program cost?</p><p style="font-size:24px;font-weight:700;line-height:1.3;color:#FFFFFF;background:#1F9D55;border-radius:16px;padding:0px 10px">1</p></div></div></div>
+<div style="display:flex;gap:12px;align-items:center;padding:12px 18px;border-bottom:2px solid #F5F5F3"><div style="flex:none;width:52px;height:52px;border-radius:26px;background:#6B6B68;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;line-height:1;color:#FFFFFF">C</p></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="display:flex;justify-content:space-between"><p style="font-size:24px;font-weight:700;line-height:1.2;color:#141414">Clinic staff</p><p style="font-size:24px;line-height:1.2;color:#1F9D55">10:20</p></div><div style="display:flex;justify-content:space-between;align-items:center"><p style="font-size:24px;line-height:1.25;color:#5E5E5B">Who will reply?</p><p style="font-size:24px;font-weight:700;line-height:1.3;color:#FFFFFF;background:#1F9D55;border-radius:16px;padding:0px 10px">5</p></div></div></div>
+<div style="display:flex;gap:12px;align-items:center;padding:12px 18px"><div style="flex:none;width:52px;height:52px;border-radius:26px;background:#B45309;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;line-height:1;color:#FFFFFF">V</p></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="display:flex;justify-content:space-between"><p style="font-size:24px;font-weight:700;line-height:1.2;color:#141414">Vikram S.</p><p style="font-size:24px;line-height:1.2;color:#1F9D55">9:58</p></div><div style="display:flex;justify-content:space-between;align-items:center"><p style="font-size:24px;line-height:1.25;color:#5E5E5B">Is this serious??</p><p style="font-size:24px;font-weight:700;line-height:1.3;color:#FFFFFF;background:#1F9D55;border-radius:16px;padding:0px 10px">2</p></div></div></div>
+</div>
+<div style="position:absolute;left:1492px;top:174px;width:100px;height:24px;background:#141414;border-radius:12px"></div>
+<div data-build-in="rise 1" style="position:absolute;left:128px;bottom:128px;width:960px;display:flex;background:#FFFFFF;border-radius:20px;padding:24px 32px;box-shadow:0 16px 40px rgba(20,20,20,0.25)"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:36px;font-weight:800;line-height:1.2;color:#C71212">Jano sends each message to the right person, with the file open.</p></div>
+<aside></aside>
+</section>
+<section id="MD" data-transition="fade" style="display:flex; flex-direction:column; gap:8px; padding:72px 128px 160px; background:#f5f5f3" data-hidden="1">
+  <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#b45309">Communication · Demo</p>
+  <h2 style="font-family:Montserrat, Arial, sans-serif; font-size:56px; font-weight:700; line-height:1.1; letter-spacing:-1px; color:#141414">From session to the right reviewer.</h2>
+  <div style="position:absolute; top:200px; left:128px; width:1112px; height:658px; display:flex; flex-direction:column; background:#1c1c1e; border-radius:40px; box-shadow:0 16px 40px #14141433">
+  </div>
+  <div style="position:absolute; top:210px; left:680px; width:8px; height:8px; display:flex; flex-direction:column; background:#3a3a3c; border-radius:4px">
+  </div>
+  <div style="position:absolute; top:228px; left:156px; width:1056px; height:594px; display:flex; flex-direction:row; gap:24px; padding:32px; background:#ffffff; border-radius:14px; overflow:hidden">
+    <div style="width:440px; display:flex; flex-direction:column; gap:10px; padding:24px; background:#f5f5f3; border-radius:14px">
+      <p style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#141414">Session 1 · Chelation</p>
+      <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#5e5e5b">Nikhil Deshmukh · tablet app</p>
+      <div style="display:flex; flex-direction:row; gap:12px">
+        <p style="width:140px; flex:0 0 auto; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#5e5e5b">Prescribed</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">10-hour infusion</p>
+      </div>
+      <div style="display:flex; flex-direction:row; gap:12px">
+        <p style="width:140px; flex:0 0 auto; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#5e5e5b">Recorded</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#b45309">Ended early · reason recorded</p>
+      </div>
+      <div style="display:flex; flex-direction:row; gap:12px">
+        <p style="width:140px; flex:0 0 auto; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#5e5e5b">Closed by</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Nurse</p>
+      </div>
+      <div style="flex:1"></div>
+      <p style="padding:10px 16px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#0b7a45; background:#e6f4ec; border-radius:12px">Next contact queued · 09:00</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:20px; flex:1">
+      <div style="display:flex; flex-direction:column; gap:6px; padding:18px 22px; background:#ffffff; border:3px solid #dededc; border-radius:16px">
+        <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#6b6b68">Routine path</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:700; line-height:1.3; color:#141414">Session completed as planned</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; line-height:1.3; color:#141414">→ 09:00 routine check-in</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px; padding:18px 22px; background:#ffffff; border:3px solid #e54b4b; border-radius:16px">
+        <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#c71212">Exception path</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:700; line-height:1.3; color:#141414">Session ended early, reason recorded</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; line-height:1.3; color:#141414">→ 09:00 check-in and a specialist review task</p>
+      </div>
+      <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#5e5e5b">Your protocol defines both paths. Clinicians approve the questions.</p>
+    </div>
+  </div>
+  <div data-build-in="fade 1" style="position:absolute; top:228px; left:156px; width:1056px; height:594px; display:flex; flex-direction:column; background:#ededea; border-radius:14px; overflow:hidden">
+    <div style="display:flex; flex-direction:row; gap:16px; align-items:center; padding:16px 28px; background:#ffffff; border-bottom:2px solid #dededc">
+      <div style="width:52px; height:52px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#e54b4b; border-radius:26px">
+        <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; line-height:1; color:#ffffff">S</p>
+      </div>
+      <div style="display:flex; flex-direction:column">
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:26px; font-weight:700; line-height:1.2; color:#141414">Sunrise Clinic</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.2; color:#5e5e5b">WhatsApp simulation</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:20px; flex:1; padding:28px 40px">
+      <p style="align-self:center; padding:2px 14px; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#5e5e5b; background:#ffffff; border-radius:12px">Next morning · 09:00</p>
+      <div style="display:flex; flex-direction:column; align-self:start; max-width:640px; padding:14px 20px; background:#ffffff; border-radius:20px 20px 20px 4px">
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:30px; line-height:1.3; color:#141414">How have you been since your chelation session?</p>
+      </div>
+      <div style="display:flex; flex-direction:column; align-self:end; max-width:640px; padding:14px 20px; background:#fce8e8; border-radius:20px 20px 4px 20px">
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:30px; line-height:1.3; color:#141414">I have a new concern. Please contact me.</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; gap:12px; align-items:center; padding:12px 20px; background:#ffffff">
+      <p style="flex:1; padding:8px 18px; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#6b6b68; background:#f5f5f3; border-radius:24px">Message</p>
+      <div style="width:48px; height:48px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#e54b4b; border-radius:24px">
+        <svg class="xi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px; height:26px; color:#ffffff"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
+  <path d="m21.854 2.147-10.94 10.939" /></svg>
+      </div>
+    </div>
+  </div>
+  <img src="assets/aa21d1d581f03561a38ddef0a1ec1e56.jpg" alt="Step 3. Patient check-ins, WhatsApp simulation. The patient replied with a new concern. Nurse triage is recorded. A haematologist review is due, owned by Dr. Neha Kulkarni." data-build-in="fade 2" style="position:absolute; top:228px; left:156px; width:1056px; height:594px; background:#ffffff; border-radius:14px; object-fit:contain">
+  <img src="assets/57ac6bb22a6b32f1178b2c821c414b4e.jpg" alt="Step 4. Patient check-ins, status Reviewed. The haematologist recorded the review: the nurse owns the next contact. No treatment advice is given in this example." data-build-in="fade 3" style="position:absolute; top:228px; left:156px; width:1056px; height:594px; background:#ffffff; border-radius:14px; object-fit:contain">
+  <div data-build-in="fade 2" data-build-out="fade 3" style="position:absolute; top:633px; left:256px; width:855px; height:118px; display:flex; flex-direction:column; border:4px solid #e54b4b; border-radius:10px">
+  </div>
+  <div data-build-in="fade 3" style="position:absolute; top:632px; left:256px; width:856px; height:164px; display:flex; flex-direction:column; border:4px solid #e54b4b; border-radius:10px">
+  </div>
+  <div id="e10-jny02c" data-build-out="fade 1" style="position:absolute; top:252px; left:1280px; width:512px; height:140px; display:flex; flex-direction:column; background:#fdf1e3; border-left:6px solid #b45309; border-radius:14px">
+  </div>
+  <div id="e11-jny02c" data-build-in="fade 1" data-build-out="fade 2" style="position:absolute; top:402px; left:1280px; width:512px; height:140px; display:flex; flex-direction:column; background:#fdf1e3; border-left:6px solid #b45309; border-radius:14px">
+  </div>
+  <div id="e12-jny02c" data-build-in="fade 2" data-build-out="fade 3" style="position:absolute; top:552px; left:1280px; width:512px; height:140px; display:flex; flex-direction:column; background:#fdf1e3; border-left:6px solid #b45309; border-radius:14px">
+  </div>
+  <div id="e13-jny02c" data-build-in="fade 3" style="position:absolute; top:702px; left:1280px; width:512px; height:140px; display:flex; flex-direction:column; background:#fdf1e3; border-left:6px solid #b45309; border-radius:14px">
+  </div>
+  <div id="e14-jny02c" style="position:absolute; top:252px; left:1280px; width:512px; display:flex; flex-direction:row; gap:16px; align-items:start; padding:16px 20px">
+    <div style="width:48px; height:48px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#b45309; border-radius:24px">
+      <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; line-height:1; color:#ffffff">1</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4px">
+      <h3 style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#141414">Session ends early</h3>
+      <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#4a4a48">Reason recorded. The protocol takes the exception path.</p>
+    </div>
+  </div>
+  <div id="e15-jny02c" style="position:absolute; top:402px; left:1280px; width:512px; display:flex; flex-direction:row; gap:16px; align-items:start; padding:16px 20px">
+    <div style="width:48px; height:48px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#b45309; border-radius:24px">
+      <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; line-height:1; color:#ffffff">2</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4px">
+      <h3 style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#141414">Patient replies</h3>
+      <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#4a4a48">Next morning, on WhatsApp: a new concern.</p>
+    </div>
+  </div>
+  <div id="e16-jny02c" style="position:absolute; top:552px; left:1280px; width:512px; display:flex; flex-direction:row; gap:16px; align-items:start; padding:16px 20px">
+    <div style="width:48px; height:48px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#b45309; border-radius:24px">
+      <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; line-height:1; color:#ffffff">3</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4px">
+      <h3 style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#141414">Review is due</h3>
+      <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#4a4a48">Nurse triage recorded. A named doctor owns the review.</p>
+    </div>
+  </div>
+  <div id="e17-jny02c" style="position:absolute; top:702px; left:1280px; width:512px; display:flex; flex-direction:row; gap:16px; align-items:start; padding:16px 20px">
+    <div style="width:48px; height:48px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#b45309; border-radius:24px">
+      <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; line-height:1; color:#ffffff">4</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4px">
+      <h3 style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#141414">Review recorded</h3>
+      <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#4a4a48">The doctor records it. The nurse owns the next contact.</p>
+    </div>
+  </div>
+  <p id="e18-jny02c" style="position:absolute; bottom:64px; left:128px; width:1300px; font-family:Figtree, Arial, sans-serif; font-size:24px; color:#6b6b68">Mockups and a WhatsApp simulation. Synthetic patient. No message sent.</p>
+  <p id="e19-jny02c" style="position:absolute; right:128px; bottom:64px; width:340px; font-family:Figtree, Arial, sans-serif; font-size:24px; text-align:right; color:#6b6b68">Click to step through</p>
+  <aside></aside>
+</section>
+<section id="SG" data-transition="fade" style="background:#FFFFFF;color:#141414;font-family:'Figtree', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:8px" data-hidden="0">
+<p style="position:absolute;left:128px;top:120px;width:260px;font-family:'Montserrat', Arial, sans-serif;font-size:300px;font-weight:800;line-height:1;letter-spacing:-8px;color:#E54B4B">3</p>
+<div style="position:absolute;left:400px;top:150px;width:1392px;display:flex;flex-direction:column;gap:14px">
+<h1 style="font-family:'Montserrat', Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-3px;color:#141414">Growth</h1>
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:48px;font-weight:700;line-height:1.2;color:#4A4A48">Grow the practice.</p>
+<div style="display:flex;flex-wrap:wrap;gap:14px;padding:24px 0px 0px">
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E6F4EC;border:2px solid #CFE3D5;border-radius:999px;padding:12px 24px">New enquiries</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E6F4EC;border:2px solid #CFE3D5;border-radius:999px;padding:12px 24px">First visits</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E6F4EC;border:2px solid #CFE3D5;border-radius:999px;padding:12px 24px">Sessions vs plan</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E6F4EC;border:2px solid #CFE3D5;border-radius:999px;padding:12px 24px">Missed visits</p>
+<p style="font-size:26px;font-weight:600;line-height:1.2;color:#141414;background:#E6F4EC;border:2px solid #CFE3D5;border-radius:999px;padding:12px 24px">Program revenue</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;top:952px;width:1664px;height:8px;background:#E54B4B;border-radius:4px"></div>
+<aside></aside>
+</section>
+<section id="G1" data-transition="fade" style="background:#E54B4B;color:#FFFFFF;font-family:'Figtree', Arial, sans-serif;padding:72px 128px 160px;display:flex;flex-direction:column;gap:12px" data-hidden="0">
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#FFE1DE">Growth · the problem</p>
+<h2 style="font-family:'Montserrat', Arial, sans-serif;font-size:64px;font-weight:800;line-height:1.05;letter-spacing:-1px;color:#FFFFFF">Patients rarely quit. They drift.</h2>
+<p style="position:absolute;left:128px;top:246px;width:900px;font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFE1DE">Nikhil's program · 10 sessions</p>
+<div style="position:absolute;left:180px;top:349px;width:1560px;height:6px;background:rgba(255,255,255,0.35);border-radius:3px"></div>
+<div style="position:absolute;left:128px;top:300px;width:104px;height:104px;border-radius:52px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:36px;font-weight:800;line-height:1;color:#C71212">1</p></div>
+<div style="position:absolute;left:301px;top:300px;width:104px;height:104px;border-radius:52px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:36px;font-weight:800;line-height:1;color:#C71212">2</p></div>
+<div style="position:absolute;left:474px;top:300px;width:104px;height:104px;border-radius:52px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:36px;font-weight:800;line-height:1;color:#C71212">3</p></div>
+<div style="position:absolute;left:647px;top:300px;width:104px;height:104px;border-radius:52px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:36px;font-weight:800;line-height:1;color:#C71212">4</p></div>
+<div style="position:absolute;left:820px;top:300px;width:104px;height:104px;border-radius:52px;background:#E54B4B;border:5px dashed #FFFFFF;display:flex;align-items:center;justify-content:center"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:48px;font-weight:800;line-height:1;color:#FFFFFF">?</p></div>
+<div style="position:absolute;left:993px;top:300px;width:104px;height:104px;border-radius:52px;background:#E54B4B;border:3px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:32px;font-weight:700;line-height:1;color:rgba(255,255,255,0.55)">6</p></div>
+<div style="position:absolute;left:1166px;top:300px;width:104px;height:104px;border-radius:52px;background:#E54B4B;border:3px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:32px;font-weight:700;line-height:1;color:rgba(255,255,255,0.55)">7</p></div>
+<div style="position:absolute;left:1339px;top:300px;width:104px;height:104px;border-radius:52px;background:#E54B4B;border:3px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:32px;font-weight:700;line-height:1;color:rgba(255,255,255,0.55)">8</p></div>
+<div style="position:absolute;left:1512px;top:300px;width:104px;height:104px;border-radius:52px;background:#E54B4B;border:3px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:32px;font-weight:700;line-height:1;color:rgba(255,255,255,0.55)">9</p></div>
+<div style="position:absolute;left:1685px;top:300px;width:104px;height:104px;border-radius:52px;background:#E54B4B;border:3px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:32px;font-weight:700;line-height:1;color:rgba(255,255,255,0.55)">10</p></div>
+<p style="position:absolute;left:732px;top:424px;width:280px;font-size:24px;font-weight:700;line-height:1.3;color:#C71212;background:#FFFFFF;border-radius:20px;padding:6px 16px;text-align:center">Session 5 · missed</p>
+<div style="position:absolute;left:128px;top:510px;width:528px;display:flex;flex-direction:column;gap:4px;background:rgba(255,255,255,0.12);border-radius:14px;padding:16px 22px"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFE1DE">Day 1</p><p style="font-size:30px;font-weight:700;line-height:1.3;color:#FFFFFF">Nobody calls.</p></div>
+<div style="position:absolute;left:696px;top:510px;width:528px;display:flex;flex-direction:column;gap:4px;background:rgba(255,255,255,0.12);border-radius:14px;padding:16px 22px"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFE1DE">Day 10</p><p style="font-size:30px;font-weight:700;line-height:1.3;color:#FFFFFF">Coming back feels awkward.</p></div>
+<div style="position:absolute;left:1264px;top:510px;width:528px;display:flex;flex-direction:column;gap:4px;background:rgba(255,255,255,0.12);border-radius:14px;padding:16px 22px"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFE1DE">Day 30</p><p style="font-size:30px;font-weight:700;line-height:1.3;color:#FFFFFF">The program is over.</p></div>
+<p style="position:absolute;left:128px;top:654px;width:1664px;font-family:'Montserrat', Arial, sans-serif;font-size:44px;font-weight:800;line-height:1.1;color:#FFFFFF">Six sessions lost. One relationship lost.</p>
+<div data-build-in="rise 1" style="position:absolute;left:128px;top:748px;width:1300px;display:flex;background:#FFFFFF;border-radius:20px;padding:24px 32px;box-shadow:0 16px 40px rgba(20,20,20,0.25)"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:36px;font-weight:800;line-height:1.2;color:#C71212">Jano flags the missed visit and gives it an owner.</p></div>
+<aside></aside>
+</section>
+<section id="GD" data-transition="fade" style="display:flex; flex-direction:column; gap:8px; padding:72px 128px 160px; background:#f5f5f3" data-hidden="0">
+  <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#0b7a45">Growth · Demo</p>
+  <h2 style="font-family:Montserrat, Arial, sans-serif; font-size:56px; font-weight:700; line-height:1.1; letter-spacing:-1px; color:#141414">From enquiry to a full program.</h2>
+  <div style="position:absolute; top:200px; left:128px; width:1112px; height:658px; display:flex; flex-direction:column; background:#1c1c1e; border-radius:40px; box-shadow:0 16px 40px #14141433">
+  </div>
+  <div style="position:absolute; top:210px; left:680px; width:8px; height:8px; display:flex; flex-direction:column; background:#3a3a3c; border-radius:4px">
+  </div>
+  <div style="position:absolute; top:228px; left:156px; width:1056px; height:594px; display:flex; flex-direction:column; gap:14px; padding:28px 32px; background:#ffffff; border-radius:14px; overflow:hidden">
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+      <p style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#141414">Enquiries · this week</p>
+      <p style="padding:2px 14px; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#0b7a45; background:#e6f4ec; border-radius:14px">From WhatsApp</p>
+    </div>
+    <div style="display:flex; flex-direction:row; gap:16px; padding:6px 0; border-bottom:2px solid #dededc">
+      <p style="width:170px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:700; color:#5e5e5b">Name</p>
+      <p style="flex:1; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:700; color:#5e5e5b">Message</p>
+      <p style="width:150px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:700; color:#5e5e5b">Owner</p>
+      <p style="width:230px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:700; color:#5e5e5b">Status</p>
+    </div>
+    <div style="display:flex; flex-direction:row; gap:16px; align-items:start; padding:8px 0; border-bottom:2px solid #ededea">
+      <p style="width:170px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Asha R.</p>
+      <p style="flex:1; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">Do you offer IV therapy programs?</p>
+      <p style="width:150px; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">Front desk</p>
+      <p style="width:230px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#0b7a45">First visit booked · Tue 10:30</p>
+    </div>
+    <div style="display:flex; flex-direction:row; gap:16px; align-items:start; padding:8px 0; border-bottom:2px solid #ededea">
+      <p style="width:170px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Vikram S.</p>
+      <p style="flex:1; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">Can I bring my heavy metal report?</p>
+      <p style="width:150px; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">Nurse</p>
+      <p style="width:230px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#b45309">Report requested</p>
+    </div>
+    <div style="display:flex; flex-direction:row; gap:16px; align-items:start; padding:8px 0">
+      <p style="width:170px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Meera K.</p>
+      <p style="flex:1; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">What does a program cost?</p>
+      <p style="width:150px; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">Front desk</p>
+      <p style="width:230px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#b45309">Call back today</p>
+    </div>
+  </div>
+  <div data-build-in="fade 1" style="position:absolute; top:228px; left:156px; width:1056px; height:594px; display:flex; flex-direction:row; background:#ffffff; border-radius:14px; overflow:hidden">
+    <div style="width:420px; display:flex; flex-direction:column; gap:14px; padding:24px; background:#ededea">
+      <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; color:#141414">Nikhil · WhatsApp simulation</p>
+      <div style="display:flex; flex-direction:column; align-self:end; max-width:330px; padding:10px 14px; background:#fce8e8; border-radius:16px 16px 4px 16px">
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">I want to continue, but I cannot come on Thursday.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; align-self:start; max-width:330px; padding:10px 14px; background:#ffffff; border-radius:16px 16px 16px 4px">
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">We can offer another time. Which suits you?</p>
+      </div>
+      <p style="align-self:start; padding:4px 14px; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#c71212; background:#ffffff; border:2px solid #e54b4b; border-radius:20px">Tuesday morning</p>
+      <p style="align-self:start; padding:4px 14px; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#c71212; background:#ffffff; border:2px solid #e54b4b; border-radius:20px">Wednesday evening</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:14px; flex:1; padding:28px">
+      <p style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#141414">Clinic follow-up · Nikhil Deshmukh</p>
+      <div style="display:flex; flex-direction:row; gap:12px">
+        <p style="width:170px; flex:0 0 auto; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#5e5e5b">Reason</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Review due</p>
+      </div>
+      <div style="display:flex; flex-direction:row; gap:12px">
+        <p style="width:170px; flex:0 0 auto; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#5e5e5b">Barrier</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Time: cannot attend Thursday (patient-reported)</p>
+      </div>
+      <div style="display:flex; flex-direction:row; gap:12px">
+        <p style="width:170px; flex:0 0 auto; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#5e5e5b">Type</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Logistical, not clinical</p>
+      </div>
+      <div style="display:flex; flex-direction:row; gap:12px">
+        <p style="width:170px; flex:0 0 auto; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#5e5e5b">Owner</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Front desk</p>
+      </div>
+      <div style="display:flex; flex-direction:row; gap:12px">
+        <p style="width:170px; flex:0 0 auto; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#5e5e5b">Next step</p>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#0b7a45">Review rebooked · confirmed</p>
+      </div>
+    </div>
+  </div>
+  <div data-build-in="fade 2" style="position:absolute; top:228px; left:156px; width:1056px; height:594px; display:flex; flex-direction:column; gap:18px; padding:28px 32px; background:#ffffff; border-radius:14px; overflow:hidden">
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+      <p style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#141414">Programs · October</p>
+      <p style="padding:2px 14px; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#b45309; background:#fdf1e3; border-radius:14px">Synthetic data</p>
+    </div>
+    <div style="display:flex; flex-direction:row; gap:16px">
+      <div style="display:flex; flex-direction:column; gap:4px; flex:1; padding:16px 18px; background:#f5f5f3; border-radius:14px">
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.2; color:#5e5e5b">Active programs</p>
+        <p style="font-family:Montserrat, Arial, sans-serif; font-size:40px; font-weight:700; line-height:1.1; color:#141414">42</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:4px; flex:1; padding:16px 18px; background:#f5f5f3; border-radius:14px">
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.2; color:#5e5e5b">Sessions done</p>
+        <p style="font-family:Montserrat, Arial, sans-serif; font-size:40px; font-weight:700; line-height:1.1; color:#141414">118/140</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:4px; flex:1; padding:16px 18px; background:#f5f5f3; border-radius:14px">
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.2; color:#5e5e5b">Follow-ups due</p>
+        <p style="font-family:Montserrat, Arial, sans-serif; font-size:40px; font-weight:700; line-height:1.1; color:#141414">9</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:4px; flex:1; padding:16px 18px; background:#fce8e8; border-radius:14px">
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.2; color:#5e5e5b">Revenue at risk</p>
+        <p style="font-family:Montserrat, Arial, sans-serif; font-size:40px; font-weight:700; line-height:1.1; color:#c71212">₹1.8 L</p>
+      </div>
+    </div>
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; color:#5e5e5b">Needs action</p>
+    <div style="display:flex; flex-direction:row; gap:16px; padding:6px 0; border-bottom:2px solid #ededea">
+      <p style="width:200px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Nikhil D.</p>
+      <p style="flex:1; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">Review due · barrier: time</p>
+      <p style="width:180px; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">Front desk</p>
+    </div>
+    <div style="display:flex; flex-direction:row; gap:16px; padding:6px 0; border-bottom:2px solid #ededea">
+      <p style="width:200px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Asha R.</p>
+      <p style="flex:1; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">Two sessions missed</p>
+      <p style="width:180px; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">Nurse</p>
+    </div>
+    <div style="display:flex; flex-direction:row; gap:16px; padding:6px 0">
+      <p style="width:200px; font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Vikram S.</p>
+      <p style="flex:1; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">Program ends in 7 days · review</p>
+      <p style="width:180px; font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#141414">Doctor</p>
+    </div>
+  </div>
+  <div id="e7-p74xc6" data-build-out="fade 1" style="position:absolute; top:252px; left:1280px; width:512px; height:140px; display:flex; flex-direction:column; background:#e6f4ec; border-left:6px solid #0b7a45; border-radius:14px">
+  </div>
+  <div id="e8-p74xc6" data-build-in="fade 1" data-build-out="fade 2" style="position:absolute; top:402px; left:1280px; width:512px; height:140px; display:flex; flex-direction:column; background:#e6f4ec; border-left:6px solid #0b7a45; border-radius:14px">
+  </div>
+  <div id="e9-p74xc6" data-build-in="fade 2" style="position:absolute; top:552px; left:1280px; width:512px; height:140px; display:flex; flex-direction:column; background:#e6f4ec; border-left:6px solid #0b7a45; border-radius:14px">
+  </div>
+  <div id="e10-p74xc6" style="position:absolute; top:252px; left:1280px; width:512px; display:flex; flex-direction:row; gap:16px; align-items:start; padding:16px 20px">
+    <div style="width:48px; height:48px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#0b7a45; border-radius:24px">
+      <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; line-height:1; color:#ffffff">1</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4px">
+      <h3 style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#141414">Enquiry to visit</h3>
+      <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#4a4a48">WhatsApp enquiries in one list, each with an owner.</p>
+    </div>
+  </div>
+  <div id="e11-p74xc6" style="position:absolute; top:402px; left:1280px; width:512px; display:flex; flex-direction:row; gap:16px; align-items:start; padding:16px 20px">
+    <div style="width:48px; height:48px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#0b7a45; border-radius:24px">
+      <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; line-height:1; color:#ffffff">2</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4px">
+      <h3 style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#141414">Barrier to rebooking</h3>
+      <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#4a4a48">The patient says why. The front desk rebooks.</p>
+    </div>
+  </div>
+  <div id="e12-p74xc6" style="position:absolute; top:552px; left:1280px; width:512px; display:flex; flex-direction:row; gap:16px; align-items:start; padding:16px 20px">
+    <div style="width:48px; height:48px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#0b7a45; border-radius:24px">
+      <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; line-height:1; color:#ffffff">3</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4px">
+      <h3 style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:700; line-height:1.2; color:#141414">Program view</h3>
+      <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; line-height:1.3; color:#4a4a48">Sessions against plan, follow-ups due, revenue at risk.</p>
+    </div>
+  </div>
+  <p id="e13-p74xc6" style="position:absolute; bottom:64px; left:128px; width:1300px; font-family:Figtree, Arial, sans-serif; font-size:24px; color:#6b6b68">Mockups. Fictional clinic and patients, synthetic numbers. Not results.</p>
+  <p id="e14-p74xc6" style="position:absolute; right:128px; bottom:64px; width:340px; font-family:Figtree, Arial, sans-serif; font-size:24px; text-align:right; color:#6b6b68">Click to step through</p>
+  <aside></aside>
+</section>
+<section id="SP" data-transition="fade" style="background:#FFFFFF;color:#141414;font-family:'Figtree', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:8px" data-hidden="0">
+<p style="position:absolute;left:128px;top:95.8px;width:260px;font-family:'Montserrat', Arial, sans-serif;font-size:300px;font-weight:800;line-height:1;letter-spacing:-8px;color:#E54B4B">+</p>
+<div style="position:absolute;left:400px;top:150px;width:1392px;display:flex;flex-direction:column;gap:14px">
+<h1 style="font-family:'Montserrat', Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-3px;color:#141414">Partners</h1>
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:48px;font-weight:700;line-height:1.2;color:#4A4A48">Protocols from everyone you work with.</p>
+</div>
+<div data-build-in="rise 1 auto" style="position:absolute;left:128px;top:430px;width:520px;height:260px;display:flex;gap:16px;align-items:center"><img src="assets/9c72f39760da570f1f6ae44f1c1cc172.png" alt="An equipment maker behind a counter with an infusion pump, a hyperbaric chamber and an ozone generator" style="flex:none;width:220px;height:260px;object-fit:contain"><div style="width:284px;display:flex;flex-direction:column;gap:10px;align-items:start"><h3 style="font-family:'Montserrat', Arial, sans-serif;font-size:28px;font-weight:800;line-height:1.15;color:#141414">Equipment makers</h3><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:8px 14px;white-space:nowrap">Infusion pumps</p><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:8px 14px;white-space:nowrap">Hyperbaric chambers</p><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:8px 14px;white-space:nowrap">Ozone generators</p></div></div>
+<div data-build-in="rise 2 auto" style="position:absolute;left:700px;top:430px;width:520px;height:260px;display:flex;gap:16px;align-items:center"><img src="assets/31ac8a1dcc1f89452269f6cb195154df.png" alt="A medicine maker in a lab coat behind a counter with vials, an IV bag and a supplement bottle" style="flex:none;width:220px;height:260px;object-fit:contain"><div style="width:284px;display:flex;flex-direction:column;gap:10px;align-items:start"><h3 style="font-family:'Montserrat', Arial, sans-serif;font-size:28px;font-weight:800;line-height:1.15;color:#141414">Medicine makers</h3><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:8px 14px;white-space:nowrap">Chelating agents</p><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:8px 14px;white-space:nowrap">IV nutrient formulas</p><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:8px 14px;white-space:nowrap">Supplements</p></div></div>
+<div data-build-in="rise 3 auto" style="position:absolute;left:1272px;top:430px;width:520px;height:260px;display:flex;gap:16px;align-items:center"><img src="assets/13abe59cde62869bf3ddd181ee06fabb.png" alt="A lab and nutrition provider behind a counter with test tubes, a rapid test kit and an apple" style="flex:none;width:220px;height:260px;object-fit:contain"><div style="width:284px;display:flex;flex-direction:column;gap:10px;align-items:start"><h3 style="font-family:'Montserrat', Arial, sans-serif;font-size:28px;font-weight:800;line-height:1.15;color:#141414">Other providers</h3><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:8px 14px;white-space:nowrap">Diagnostic labs</p><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:8px 14px;white-space:nowrap">Test kit makers</p><p style="font-size:24px;font-weight:600;line-height:1.2;color:#141414;background:#FFFFFF;border:2px solid #E6E3DF;border-radius:999px;padding:8px 14px;white-space:nowrap">Nutrition programs</p></div></div>
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible"><line x1="238.0" y1="700.0" x2="238.0" y2="718.8" stroke="#E54B4B" stroke-width="4.0" stroke-linecap="round"/><polygon points="238.0,738.0 224.8,714.0 251.2,714.0" fill="#E54B4B"/></svg><svg width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible"><line x1="810.0" y1="700.0" x2="810.0" y2="718.8" stroke="#E54B4B" stroke-width="4.0" stroke-linecap="round"/><polygon points="810.0,738.0 796.8,714.0 823.2,714.0" fill="#E54B4B"/></svg><svg width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible"><line x1="1382.0" y1="700.0" x2="1382.0" y2="718.8" stroke="#E54B4B" stroke-width="4.0" stroke-linecap="round"/><polygon points="1382.0,738.0 1368.8,714.0 1395.2,714.0" fill="#E54B4B"/></svg>
+<div data-build-in="pop 4 auto" style="position:absolute;left:128px;top:742px;width:1664px;height:188px;display:flex;gap:20px;align-items:center;background:#E54B4B;border-radius:24px;padding:0px 32px;box-shadow:0 16px 40px rgba(229,75,75,0.3)"><div style="flex:none;width:480px;display:flex;flex-direction:column;gap:8px"><h3 style="font-family:'Montserrat', Arial, sans-serif;font-size:32px;font-weight:800;line-height:1.15;color:#FFFFFF">Your clinic's protocol library</h3><p style="font-size:24px;font-weight:600;line-height:1.3;color:#FFE1DE">You review, edit and switch on. Your team runs it.</p></div><img src="assets/6903848ab9e423f6936cef20cb5caf42.png" alt="Protocol binders shrink along a line into the doctor's Jano tablet" style="flex:none;width:896px;height:170px;object-fit:contain"></div>
+<img data-build-in="rise 5 auto" src="assets/fb7cb7f628f9357945574d3e2b612e8e.png" alt="The doctor holds up a tablet showing Jano" style="position:absolute;left:1580px;top:680px;width:184px;height:250px;object-fit:contain">
+<p data-build-in="rise 5 auto" style="position:absolute;left:1624px;top:859px;width:92px;font-family:'Montserrat', Arial, sans-serif;font-size:28px;font-weight:800;line-height:1.2;letter-spacing:-0.5px;color:#E54B4B;text-align:center">Jano</p>
+<div style="position:absolute;left:128px;top:952px;width:1664px;height:8px;background:#E54B4B;border-radius:4px"></div>
+<p style="position:absolute;left:128px;top:984px;width:1664px;font-size:24px;color:#6B6B68">Illustration. Protocols from makers and providers are a new program. The categories are examples, not partners.</p>
+<aside></aside>
+</section>
+<section id="P1" data-transition="fade" style="background:#ffffff" data-hidden="1">
+  <svg xmlns="http://www.w3.org/2000/svg" aria-label="An infusion pump on an IV stand, with a protocol tag tied to it" viewBox="0 0 520 640" style="position:absolute; top:250px; left:1180px; width:520px; height:640px"><ellipse cx="270" cy="360" rx="240" ry="230" fill="#F9D8D5"/><line x1="260" y1="30" x2="260" y2="590" stroke="#141414" stroke-width="8" stroke-linecap="round"/><line x1="185" y1="40" x2="335" y2="40" stroke="#141414" stroke-width="6" stroke-linecap="round"/><line x1="192" y1="40" x2="192" y2="60" stroke="#141414" stroke-width="5"/><rect x="150" y="60" width="84" height="130" rx="18" fill="#FFFFFF" stroke="#141414" stroke-width="6"/><rect x="161" y="108" width="62" height="70" rx="10" fill="#F6C9C6"/><path d="M192 190 C192 240 230 250 230 300" fill="none" stroke="#141414" stroke-width="5"/><rect x="168" y="300" width="190" height="160" rx="20" fill="#FFFFFF" stroke="#141414" stroke-width="6"/><rect x="188" y="322" width="150" height="64" rx="8" fill="#22302A"/><rect x="204" y="340" width="38" height="28" rx="3" fill="#BFE3CC"/><rect x="250" y="358" width="8" height="10" rx="2" fill="#BFE3CC"/><rect x="266" y="340" width="38" height="28" rx="3" fill="#BFE3CC"/><circle cx="208" cy="420" r="13" fill="#F6C9C6" stroke="#141414" stroke-width="3"/><circle cx="252" cy="420" r="13" fill="#F6C9C6" stroke="#141414" stroke-width="3"/><circle cx="296" cy="420" r="13" fill="#F6C9C6" stroke="#141414" stroke-width="3"/><circle cx="332" cy="420" r="8" fill="#E54B4B"/><path d="M263 460 C263 530 360 520 380 600" fill="none" stroke="#141414" stroke-width="5"/><line x1="260" y1="590" x2="170" y2="620" stroke="#141414" stroke-width="6" stroke-linecap="round"/><line x1="260" y1="590" x2="350" y2="620" stroke="#141414" stroke-width="6" stroke-linecap="round"/><circle cx="170" cy="624" r="10" fill="#FFFFFF" stroke="#141414" stroke-width="5"/><circle cx="350" cy="624" r="10" fill="#FFFFFF" stroke="#141414" stroke-width="5"/><path d="M358 340 C380 330 390 315 400 300" fill="none" stroke="#E54B4B" stroke-width="3" stroke-dasharray="6 6"/></svg>
+  <div style="position:absolute; top:470px; left:1560px; width:232px; display:flex; flex-direction:column; gap:6px; padding:16px 20px; background:#ffffff; border:3px solid #e54b4b; border-radius:14px; box-shadow:0 10px 24px #14141426; transform:rotate(5deg)">
+    <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#c71212">Protocol</p>
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Setup</p>
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Checks</p>
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Readings</p>
+    <p style="font-family:Figtree, Arial, sans-serif; font-size:24px; font-weight:600; line-height:1.3; color:#141414">Follow-up</p>
+  </div>
+  <div style="position:absolute; top:72px; left:128px; width:980px; display:flex; flex-direction:column; gap:24px">
+    <p style="font-family:Montserrat, Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#c71212">For the companies in this room</p>
+    <h2 style="font-family:Montserrat, Arial, sans-serif; font-size:60px; font-weight:800; line-height:1.05; letter-spacing:-1px; color:#141414">Your equipment is only as good as the protocol around it.</h2>
+    <div style="display:flex; flex-direction:row; gap:20px; align-items:start">
+      <div style="width:56px; height:56px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#e54b4b; border-radius:28px">
+        <p style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:800; line-height:1; color:#ffffff">1</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px">
+        <h3 style="font-family:Montserrat, Arial, sans-serif; font-size:36px; font-weight:800; line-height:1.2; color:#141414">Put your protocols on Jano.</h3>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:28px; line-height:1.35; color:#4a4a48">Setup, checks, readings and follow-up. Ready for every clinic that uses your product.</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; gap:20px; align-items:start">
+      <div style="width:56px; height:56px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#e54b4b; border-radius:28px">
+        <p style="font-family:Montserrat, Arial, sans-serif; font-size:28px; font-weight:800; line-height:1; color:#ffffff">2</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px">
+        <h3 style="font-family:Montserrat, Arial, sans-serif; font-size:36px; font-weight:800; line-height:1.2; color:#141414">Take an EHR to your doctors.</h3>
+        <p style="font-family:Figtree, Arial, sans-serif; font-size:28px; line-height:1.35; color:#4a4a48">They get a practice that runs better. Your equipment gets used well.</p>
+      </div>
+    </div>
+    <p style="font-family:Montserrat, Arial, sans-serif; font-size:40px; font-weight:800; line-height:1.15; color:#c71212">Happy doctors. Equipment used well.</p>
+  </div>
+  <p style="position:absolute; bottom:64px; left:128px; width:1000px; font-family:Figtree, Arial, sans-serif; font-size:24px; color:#6b6b68">Jano Health · ISSMTCT 2026</p>
+  <aside></aside>
+</section>
+<section id="P2" data-transition="fade" style="background:#F5F5F3;color:#141414;font-family:'Figtree', Arial, sans-serif;padding:72px 128px 160px;display:flex;flex-direction:column;gap:8px" data-hidden="0">
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#C71212">For the companies in this room</p>
+<h2 style="font-family:'Montserrat', Arial, sans-serif;font-size:56px;font-weight:800;line-height:1.1;letter-spacing:-1px;color:#141414">One switch away, in every clinic.</h2>
+<div style="position:absolute;left:128px;top:200px;width:1112px;height:658px;background:#1C1C1E;border-radius:40px;box-shadow:0 16px 40px rgba(20,20,20,0.2)"></div>
+<div style="position:absolute;left:680px;top:210px;width:8px;height:8px;background:#3A3A3C;border-radius:4px"></div>
+<div style="position:absolute;left:156px;top:228px;width:1056px;height:594px;background:#FFFFFF;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;gap:14px;padding:28px 32px">
+<div style="display:flex;justify-content:space-between;align-items:center"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:30px;font-weight:800;line-height:1.2;color:#141414">Protocol library</p><div style="display:flex;gap:10px"><p style="font-size:24px;font-weight:700;line-height:1.3;color:#C71212;border-bottom:3px solid #E54B4B;padding:2px 6px">All</p><p style="font-size:24px;line-height:1.3;color:#5E5E5B;padding:2px 6px">Your clinic</p><p style="font-size:24px;line-height:1.3;color:#5E5E5B;padding:2px 6px">From makers</p></div></div>
+<div style="display:flex;gap:18px;align-items:center;border-bottom:2px solid #EDEDEA;padding:14px 12px"><div style="flex:none;width:56px;height:56px;border-radius:12px;background:#E8F0FA;display:flex;align-items:center;justify-content:center"><svg class="xi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#2F6DB5;width:30px;height:30px"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20" /></svg></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><p style="font-size:28px;font-weight:700;line-height:1.2;color:#141414">EDTA chelation · 10 sessions</p><p style="font-size:24px;line-height:1.3;color:#5E5E5B">Your clinic</p></div><p style="font-size:24px;font-weight:700;line-height:1.3;color:#FFFFFF;background:#0B7A45;border-radius:16px;padding:4px 18px">On</p></div>
+<div style="display:flex;gap:18px;align-items:center;background:#FCE8E8;border-left:6px solid #E54B4B;border-radius:12px;padding:14px 12px"><div style="flex:none;width:56px;height:56px;border-radius:12px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><svg class="xi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#C71212;width:30px;height:30px"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z" /></svg></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><p style="font-size:28px;font-weight:700;line-height:1.2;color:#141414">Infusion pump · setup and checks</p><p style="font-size:24px;line-height:1.3;color:#5E5E5B">From the device maker</p></div><p style="font-size:24px;font-weight:700;line-height:1.3;color:#FFFFFF;background:#E54B4B;border-radius:16px;padding:4px 18px">Review</p></div>
+<div style="display:flex;gap:18px;align-items:center;border-bottom:2px solid #EDEDEA;padding:14px 12px"><div style="flex:none;width:56px;height:56px;border-radius:12px;background:#FDF1E3;display:flex;align-items:center;justify-content:center"><svg class="xi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#B45309;width:30px;height:30px"><path d="m21 21-4.34-4.34" />
+  <circle cx="11" cy="11" r="8" /></svg></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><p style="font-size:28px;font-weight:700;line-height:1.2;color:#141414">Metal test kit · readings</p><p style="font-size:24px;line-height:1.3;color:#5E5E5B">From the test kit maker</p></div><p style="font-size:24px;font-weight:700;line-height:1.3;color:#C71212;background:#FFFFFF;border:2px solid #E54B4B;border-radius:16px;padding:2px 16px">Review</p></div>
+<div style="display:flex;gap:18px;align-items:center;padding:14px 12px"><div style="flex:none;width:56px;height:56px;border-radius:12px;background:#F5F5F3;display:flex;align-items:center;justify-content:center"><svg class="xi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#6B6B68;width:30px;height:30px"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></svg></div><div style="flex:1;display:flex;flex-direction:column;gap:2px"><p style="font-size:28px;font-weight:700;line-height:1.2;color:#141414">Hyperbaric session log</p><p style="font-size:24px;line-height:1.3;color:#5E5E5B">From the device maker</p></div><p style="font-size:24px;font-weight:700;line-height:1.3;color:#6B6B68;background:#EDEDEA;border-radius:16px;padding:4px 18px">Off</p></div>
+</div>
+<div style="position:absolute;left:1296px;top:250px;width:496px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:6px;border-left:6px solid #E54B4B;padding:4px 0px 4px 24px"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#C71212">You</p><p style="font-family:'Montserrat', Arial, sans-serif;font-size:36px;font-weight:800;line-height:1.2;color:#141414">Publish your protocol once.</p></div>
+<div style="display:flex;flex-direction:column;gap:6px;border-left:6px solid #E54B4B;padding:4px 0px 4px 24px"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#C71212">The doctor</p><p style="font-family:'Montserrat', Arial, sans-serif;font-size:36px;font-weight:800;line-height:1.2;color:#141414">Reviews it, edits it, switches it on.</p></div>
+<div style="display:flex;flex-direction:column;gap:6px;border-left:6px solid #E54B4B;padding:4px 0px 4px 24px"><p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#C71212">The team</p><p style="font-family:'Montserrat', Arial, sans-serif;font-size:36px;font-weight:800;line-height:1.2;color:#141414">Runs it the same way, every time.</p></div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1600px;font-size:24px;color:#6B6B68">Mockup. Clinics set up their own protocols today; protocols from makers are a new program. Names are generic.</p>
+<aside></aside>
+</section>
+<section id="Z1" data-transition="fade" style="background:#FFFFFF;color:#141414;font-family:'Figtree', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:16px" data-hidden="0">
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#C71212">Next step</p>
+<h2 style="font-family:'Montserrat', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#141414">Two ways to start.</h2>
+<div style="position:absolute;left:128px;top:320px;width:1000px;display:flex;flex-direction:column;gap:8px;background:#F5F5F3;border-left:12px solid #2F6DB5;border-radius:20px;padding:28px 36px">
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#2F6DB5">Clinicians</p>
+<h3 style="font-family:'Montserrat', Arial, sans-serif;font-size:44px;font-weight:700;line-height:1.15;color:#141414">Book a demo for your clinic.</h3>
+<p style="font-size:28px;line-height:1.35;color:#4A4A48">Bring one program you already run.</p>
+</div>
+<div style="position:absolute;left:128px;top:552px;width:1000px;display:flex;flex-direction:column;gap:8px;background:#F5F5F3;border-left:12px solid #C71212;border-radius:20px;padding:28px 36px">
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#C71212">Partners</p>
+<h3 style="font-family:'Montserrat', Arial, sans-serif;font-size:44px;font-weight:700;line-height:1.15;color:#141414">Bring your protocols. Take Jano to your doctors.</h3>
+<p style="font-size:28px;line-height:1.35;color:#4A4A48">Device, diagnostic and AI companies.</p>
+</div>
+<img src="assets/af09923666d5b26537077328a6d0de47.png" alt="QR code that opens a WhatsApp chat with Jano Health at +91 91080 35266" style="position:absolute;left:1312px;top:236px;width:440px;height:440px;object-fit:contain;background:#FFFFFF;border:2px solid #DEDEDC;border-radius:24px">
+<p style="position:absolute;left:1252px;top:700px;width:560px;font-family:'Montserrat', Arial, sans-serif;font-size:32px;font-weight:700;line-height:1.3;color:#141414;text-align:center">WhatsApp +91 91080 35266</p>
+<p style="position:absolute;left:1252px;top:752px;width:560px;font-size:28px;line-height:1.35;color:#4A4A48;text-align:center">Scan, then say <b>Clinic</b> or <b>Partner</b>.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1100px;font-size:24px;color:#6B6B68">Jano Health · ISSMTCT 2026</p>
+<aside></aside>
+</section>
+<section id="A1-limits" data-transition="fade" style="background:#F5F5F3;color:#141414;font-family:'Figtree', Arial, sans-serif;padding:96px 128px;display:flex;flex-direction:column;gap:24px" data-hidden="0">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#C71212">Reference · questions</p>
+<h2 style="font-family:'Montserrat', Arial, sans-serif;font-size:64px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#141414">Evidence and limits</h2>
+</div>
+<table style="font-family:'Figtree', Arial, sans-serif;font-size:24px;color:#141414">
+<tr><th style="width:26%;text-align:left">Scene</th><th style="width:74%;text-align:left">What the talk shows</th></tr>
+<tr><td>Twenty variables</td><td>Illustration of what a clinic tracks. Not a protocol, a score or clinical advice.</td></tr>
+<tr><td>Ask Jano</td><td>Real screen. Prepared demo suggestions from saved references. Live model connection not tested.</td></tr>
+<tr><td>Order checks</td><td>Real screen. Fixed arithmetic rules, not AI.</td></tr>
+<tr><td>Required records</td><td>Real screen, tablet app. Synthetic record. No treatment occurred.</td></tr>
+<tr><td>Photo capture</td><td>Mockup. Product-owner description; not yet verified.</td></tr>
+<tr><td>Session context</td><td>Mockup. Event-specific follow-up not verified.</td></tr>
+<tr><td>WhatsApp replies</td><td>Simulation and presentation mockups. No message sent.</td></tr>
+<tr><td>Growth screens</td><td>Mockups. Fictional clinic, synthetic numbers. Product owner says the views exist.</td></tr>
+<tr><td>Partner library</td><td>New program. Clinic protocols work today; partner publishing is new.</td></tr>
+<tr><td>Results</td><td>No measured change in staffing, revenue or outcomes is claimed.</td></tr>
+</table>
+<aside></aside>
+</section>
+<section id="A2-runofshow" data-transition="fade" style="background:#F5F5F3;color:#141414;font-family:'Figtree', Arial, sans-serif;padding:96px 128px;display:flex;flex-direction:column;gap:24px" data-hidden="0">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#C71212">Presenter only · Recovery time 1:30</p>
+<h2 style="font-family:'Montserrat', Arial, sans-serif;font-size:64px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#141414">Run of show · 20 minutes</h2>
+</div>
+<table style="font-family:'Figtree', Arial, sans-serif;font-size:24px;color:#141414">
+<tr><th style="width:17%;text-align:left">Time</th><th style="width:11%;text-align:left">Slides</th><th style="width:40%;text-align:left">Segment</th><th style="width:32%;text-align:left">If behind</th></tr>
+<tr><td>0:00–0:30</td><td>1</td><td>Title</td><td>—</td></tr>
+<tr><td>0:30–2:30</td><td>2–4</td><td>Twenty variables to three pillars</td><td>Name three variables only</td></tr>
+<tr><td>2:30–7:45</td><td>5–8</td><td>Clinical: opener, problem, live demo</td><td>Cut the live demo to 2:00</td></tr>
+<tr><td>7:45–11:30</td><td>9–11</td><td>Communication: opener, problem, demo</td><td>Skip demo step 1</td></tr>
+<tr><td>11:30–14:40</td><td>12–14</td><td>Growth: opener, problem, demo</td><td>Show demo step 2 only</td></tr>
+<tr><td>14:40–17:30</td><td>15–17</td><td>For the companies in the room</td><td>Skip slide 17</td></tr>
+<tr><td>17:30–18:30</td><td>18</td><td>Two asks</td><td>Never cut</td></tr>
+</table>
+<aside></aside>
+</section>
+<section id="R1-map" data-transition="fade" style="background:#F5F5F3;color:#141414;font-family:'Figtree', Arial, sans-serif;padding:72px 128px 160px;display:flex;flex-direction:column;gap:8px" data-hidden="0">
+<p style="font-family:'Montserrat', Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#2F6DB5">Reference · Protocol map</p>
+<h2 style="font-family:'Montserrat', Arial, sans-serif;font-size:56px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#141414">Each role sees its stage.</h2>
+<img src="assets/86b660f61b58f914abefe974ac7e52b2.jpg" alt="Protocol workflow map for adult transfusional iron overload. Rows for nurse, haematologist and pharmacist. Columns for patient and prescription, onboarding, session protocol, patient check-ins, and alerts and reviews. An eligibility review card holds Complete onboarding review." style="position:absolute;left:320px;top:200px;width:1280px;height:720px;object-fit:contain;background:#FFFFFF;border-radius:12px;box-shadow:0 0 0 2px #DEDEDC, 0 12px 32px rgba(20,20,20,0.12)">
+<div style="position:absolute;left:770px;top:687px;width:155px;height:101px;border:4px solid #E54B4B;border-radius:10px"></div>
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible"><line x1="304.0" y1="737.0" x2="770.0" y2="737.0" stroke="#E54B4B" stroke-width="3.0" stroke-linecap="round"/></svg>
+<p style="position:absolute;left:128px;top:696px;width:176px;font-size:24px;font-weight:700;line-height:1.3;color:#FFFFFF;background:#E54B4B;border-radius:12px;padding:10px 12px">This sets the hold</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1200px;font-size:24px;color:#6B6B68">Real screen. Protocol map. It defines roles and stages. It is not a patient record.</p>
+<p style="position:absolute;right:128px;bottom:64px;width:400px;text-align:right;font-size:24px;color:#6B6B68">Return: type 18, Enter</p>
+<aside></aside>
+</section>
+</div>
+<div id="nav"><button id="nb-prev" title="Back">‹</button><span id="nb-count">1 / 1</span><button id="nb-next" title="Next">›</button><button id="nb-set" title="Settings (S)">⚙</button></div>
+<div id="jump"></div>
+<div id="blank"></div>
+<div id="notes"></div>
+<div id="panel"><div class="box">
+<h4>Live demo settings</h4>
+<label>App address<input type="text" id="s-base"></label>
+<div class="row">
+<label>App width inside the frame (px)<input type="number" id="s-vw" min="800" max="2560"></label>
+</div>
+<div class="row" id="s-scenes"></div>
+<label class="chk"><input type="checkbox" id="s-drive"> Clicker drives the app demo (needs the app's demo mode)</label>
+<label class="chk"><input type="checkbox" id="s-skip"> Skip slides that are hidden in the Claude deck</label>
+<div id="s-links"></div>
+<div class="btns"><button id="s-reset">Reset</button><button id="s-cancel">Close</button><button class="pri" id="s-save">Save and reload the demo</button></div>
+<div class="keys">Clicker, → , Space, PageDown: next · ← , PageUp: back · B or .: black screen · number + Enter: go to slide · F: full screen · N: notes · P: presenter window · S: settings · R: reload the demo. With a trackpad: click in the demo to use it; click the slide margin or ‹ › to take control back.</div>
+<div id="ver"></div>
+</div></div>
+<script>
+(function(){
+"use strict";
+var META = {"order": ["T01", "V1", "V2", "T02", "SC", "C1", "CD", "LD", "SM", "M1", "MD", "SG", "G1", "GD", "SP", "P1", "P2", "Z1", "A1-limits", "A2-runofshow", "R1-map"], "live": {"LD": {"scene": "clinical", "panel": [144, 204]}}, "appLocal": "http://127.0.0.1:4173/", "appOnline": "https://jano-functional.pages.dev/", "version": "2026-10-09 07:57 UTC \u00b7 e23dfdf"};
+var LOCAL = /^(127\.0\.0\.1|localhost|\[::1\])$/.test(location.hostname);
+var DEF = {base: LOCAL ? META.appLocal : META.appOnline, vw: 1440, drive: true, skipHidden: true, showBadge: false, scenes: {}};
+Object.keys(META.live).forEach(function(id){ DEF.scenes[id] = META.live[id].scene || ""; });
+var KEY = "janoDeck:" + (LOCAL ? "local" : "online");
+function load(){ var c = JSON.parse(JSON.stringify(DEF)); try{ var s = JSON.parse(localStorage.getItem(KEY)||"{}"); for(var k in s){ if(k==="scenes"){ for(var r in s.scenes) c.scenes[r]=s.scenes[r]; } else c[k]=s[k]; } }catch(e){}
+  var q = new URLSearchParams(location.search); if(q.get("app")) c.base=q.get("app"); if(q.get("drive")==="0") c.drive=false; if(q.get("badge")==="1") c.showBadge=true;
+  return c; }
+function save(c){ try{ localStorage.setItem(KEY, JSON.stringify(c)); }catch(e){} }
+var CFG = load();
+
+var stage = document.getElementById("stage");
+var slides = Array.prototype.slice.call(stage.children);
+var cur = -1, step = 0, autoTimers = [], autoRunning = false, liveFocus = false;
+if(window.matchMedia && matchMedia("(pointer: coarse)").matches) document.body.classList.add("touch");
+
+/* layout */
+function fit(){ var s = Math.min(innerWidth/1920, innerHeight/1080); stage.style.transform = "translate("+((innerWidth-1920*s)/2)+"px,"+((innerHeight-1080*s)/2)+"px) scale("+s+")"; stage.dataset.s = s; }
+addEventListener("resize", fit); fit();
+
+/* builds */
+function parseB(v){ if(!v) return null; var t=v.trim().split(/\s+/); return {fx:t[0]||"fade", n:parseInt(t[1]||"1",10), auto:t.indexOf("auto")>=0}; }
+slides.forEach(function(sec){
+  var items=[];
+  sec.querySelectorAll("[data-build-in],[data-build-out]").forEach(function(el){
+    var bi=parseB(el.getAttribute("data-build-in")), bo=parseB(el.getAttribute("data-build-out"));
+    el.classList.add("bld"); if(bi) el.classList.add("fx-"+bi.fx);
+    items.push({el:el,bi:bi,bo:bo});
+  });
+  var clicks={}, autos={};
+  items.forEach(function(it){ [it.bi,it.bo].forEach(function(b){ if(b) (b.auto?autos:clicks)[b.n]=1; }); });
+  sec._items=items;
+  sec._steps=Object.keys(clicks).map(Number).sort(function(a,b){return a-b;});
+  sec._autos=Object.keys(autos).map(Number).sort(function(a,b){return a-b;});
+});
+function setBuild(sec, k, autoDone){
+  var limit = k>0 ? sec._steps[k-1] : -Infinity;
+  sec._items.forEach(function(it){
+    var shown = it.bi ? (it.bi.auto ? autoDone : it.bi.n <= limit) : true;
+    if(it.bo && !it.bo.auto && it.bo.n <= limit) shown = false;
+    if(it.bo && it.bo.auto && autoDone) shown = false;
+    it.el.classList.toggle("bo", !shown);
+  });
+}
+function clearAuto(){ autoTimers.forEach(clearTimeout); autoTimers=[]; autoRunning=false; }
+function runAuto(sec){
+  clearAuto(); if(!sec._autos.length) return; autoRunning=true;
+  sec._autos.forEach(function(n,i){
+    autoTimers.push(setTimeout(function(){
+      sec._items.forEach(function(it){ if(it.bi&&it.bi.auto&&it.bi.n===n) it.el.classList.remove("bo"); if(it.bo&&it.bo.auto&&it.bo.n===n) it.el.classList.add("bo"); });
+      if(i===sec._autos.length-1) autoRunning=false;
+    }, 450 + i*330));
+  });
+}
+function finishAuto(sec){ clearAuto(); sec.classList.add("notrans"); setBuild(sec, step, true); void sec.offsetWidth; sec.classList.remove("notrans"); }
+
+/* visibility */
+function isLive(i){ return !!META.live[slides[i].id]; }
+function skipped(i){ return CFG.skipHidden && slides[i].dataset.hidden==="1" && !isLive(i); }
+function nextIdx(i,d){ for(var j=i+d; j>=0 && j<slides.length; j+=d){ if(!skipped(j)) return j; } return -1; }
+
+/* magic move */
+function rel(el){ var r=el.getBoundingClientRect(), s=parseFloat(stage.dataset.s)||1, b=stage.getBoundingClientRect(); return {x:(r.left-b.left)/s, y:(r.top-b.top)/s, w:r.width/s, h:r.height/s}; }
+function magic(from, to){
+  var map={};
+  from.querySelectorAll("[id]").forEach(function(el){ var cs=getComputedStyle(el); map[el.id]={r:rel(el), bg:cs.backgroundColor, bc:cs.borderTopColor, br:cs.borderRadius}; });
+  to.classList.add("instant","on","notrans"); setBuild(to, 0, true);
+  var moved=[], fade=[];
+  Array.prototype.forEach.call(to.children, function(el){ if(el.tagName==="ASIDE") return; if(el.id && map[el.id]) moved.push(el); else fade.push(el); });
+  moved.forEach(function(el){ var a=map[el.id], b=rel(el); el._css=el.getAttribute("style")||"";
+    el.style.transformOrigin="0 0"; el.style.translate=(a.r.x-b.x)+"px "+(a.r.y-b.y)+"px"; el.style.scale=(a.r.w/Math.max(b.w,1))+" "+(a.r.h/Math.max(b.h,1)); el.style.backgroundColor=a.bg; el.style.borderTopColor=a.bc; el.style.borderRadius=a.br; });
+  fade.forEach(function(el){ el.style.opacity="0"; });
+  from.classList.remove("on");
+  void to.offsetWidth; to.classList.remove("notrans");
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){
+    moved.forEach(function(el){ el.setAttribute("style", el._css+";transform-origin:0 0;transition:translate .85s cubic-bezier(.45,0,.2,1),scale .85s cubic-bezier(.45,0,.2,1),background-color .85s,border-top-color .85s,border-radius .85s"); });
+    fade.forEach(function(el){ el.style.transition="opacity .5s ease .35s"; el.style.opacity=""; });
+    setTimeout(function(){ moved.forEach(function(el){ el.setAttribute("style", el._css); }); fade.forEach(function(el){ el.style.transition=""; }); to.classList.remove("instant"); }, 1300);
+  }); });
+}
+
+/* live demo frames */
+var APP_ORIGIN = ""; try{ APP_ORIGIN = new URL(CFG.base).origin; }catch(e){}
+var demo = {};  /* per live slide id: {ready, total, step, ended} */
+function liveUrl(id){ var u; try{ u = new URL(CFG.base); }catch(e){ return CFG.base; } var sc = CFG.scenes[id]; if(CFG.drive && sc){ u.searchParams.set("demo", sc); } return u.toString(); }
+function buildLive(box){
+  var id=box.dataset.live, w=parseFloat(box.style.width), h=parseFloat(box.style.height);
+  var vw = CFG.vw, sc = w/vw, vh = h/sc;
+  box.innerHTML = '<div class="wait"><b>Loading the live demo…</b><span>If this stays, the app is not running. Press <b>R</b> to try again.</span><code></code></div><div class="badge"></div>';
+  box.querySelector("code").textContent = liveUrl(id);
+  var f=document.createElement("iframe"); f.setAttribute("allow","clipboard-read; clipboard-write; camera; microphone; fullscreen"); f.title="Live app: "+id;
+  f.style.width=vw+"px"; f.style.height=vh+"px"; f.style.transform="scale("+sc+")"; f.style.visibility="hidden";
+  f.addEventListener("load", function(){ f.style.visibility="visible"; });
+  box.appendChild(f); box._f=f;
+  f.src = liveUrl(id);
+}
+function loadAllLive(force){ document.querySelectorAll(".live").forEach(function(b){ if(force||!b._f){ demo[b.dataset.live]={}; buildLive(b); } }); }
+function send(id, msg){ var b=document.querySelector('.live[data-live="'+id+'"]'); if(!b||!b._f||!b._f.contentWindow||!APP_ORIGIN) return; msg.type="jano-demo"; try{ b._f.contentWindow.postMessage(msg, APP_ORIGIN); }catch(e){} }
+function badge(id){ var b=document.querySelector('.live[data-live="'+id+'"] .badge'), d=demo[id]||{}; if(!b) return; if(d.ready && CFG.drive){ b.textContent = (d.ended || (d.total && d.step>=d.total)) ? "Demo done · next click: next slide" : "Demo step "+(d.step||0)+" / "+(d.total||"?"); if(CFG.showBadge) b.classList.add("show"); } else b.classList.remove("show"); syncPresenter(); }
+addEventListener("message", function(e){
+  if(e.origin!==APP_ORIGIN) return; var m=e.data; if(!m||m.type!=="jano-demo") return;
+  var box=null; document.querySelectorAll(".live").forEach(function(b){ if(b._f && b._f.contentWindow===e.source) box=b; }); if(!box) return;
+  var id=box.dataset.live, d=demo[id]||(demo[id]={});
+  if(m.event==="ready"){ d.ready=true; d.total=m.total; d.step=0; d.ended=false; }
+  else if(m.event==="step"){ d.ready=true; d.step=m.step; d.total=m.total||d.total; d.ended=false; }
+  else if(m.event==="end"){ d.ended=true; if(slides[cur].id===id && CFG.drive){ var j=nextIdx(cur,1); if(j>=0){ badge(id); show(j,{dir:1}); return; } } }
+  else if(m.event==="key"){ if(slides[cur].id===id){ if(/PageDown|ArrowRight|ArrowDown| /.test(m.key)) next(); else if(/PageUp|ArrowLeft|ArrowUp/.test(m.key)) prev(); } }
+  badge(id);
+});
+function driving(){ var id=slides[cur].id, d=demo[id]; return isLive(cur) && CFG.drive && d && d.ready; }
+
+/* navigation */
+function show(i, opts){
+  opts=opts||{}; if(i<0||i>=slides.length) return;
+  var prevSec = cur>=0 ? slides[cur] : null, sec=slides[i];
+  clearAuto();
+  var atEnd = !!opts.atEnd;
+  step = atEnd ? sec._steps.length : 0;
+  if(prevSec && prevSec!==sec && opts.dir===1 && prevSec.getAttribute("data-transition")==="magic"){ cur=i; magic(prevSec, sec); setBuild(sec,0,true); }
+  else {
+    sec.classList.add("notrans"); setBuild(sec, step, atEnd); void sec.offsetWidth; sec.classList.remove("notrans");
+    slides.forEach(function(s){ if(s!==sec){ if(s===prevSec && s.classList.contains("on")){ s.classList.add("off"); setTimeout(function(){ s.classList.remove("off"); },500); } s.classList.remove("on"); } }); sec.classList.add("on"); cur=i;
+    if(!atEnd) runAuto(sec);
+  }
+  if(isLive(i)){ var d=demo[sec.id]; if(d && d.ready && CFG.drive && !atEnd){ send(sec.id,{cmd:"start", scene:CFG.scenes[sec.id]}); d.step=0; d.ended=false; badge(sec.id); } }
+  document.body.classList.toggle("livemode", isLive(i));
+  updateUI();
+}
+function next(){
+  var sec=slides[cur];
+  if(autoRunning){ finishAuto(sec); return; }
+  if(driving()){ var d=demo[sec.id]; if(!d.ended && !(d.total && d.step>=d.total)){ send(sec.id,{cmd:"next"}); return; } }
+  if(step < sec._steps.length){ step++; setBuild(sec, step, true); updateUI(); return; }
+  var j=nextIdx(cur,1); if(j>=0) show(j,{dir:1});
+}
+function prev(){
+  var sec=slides[cur];
+  if(autoRunning){ finishAuto(sec); }
+  if(driving() && (demo[sec.id].step||0)>0){ send(sec.id,{cmd:"prev"}); demo[sec.id].ended=false; return; }
+  if(step>0){ step--; setBuild(sec, step, true); updateUI(); return; }
+  var j=nextIdx(cur,-1); if(j>=0) show(j,{dir:-1, atEnd:true});
+}
+function updateUI(){ document.getElementById("nb-count").textContent=(cur+1)+" / "+slides.length; renderNotes(); syncPresenter(); try{ history.replaceState(null,"","#"+(cur+1)); }catch(e){} }
+
+/* notes and presenter window */
+var notesEl=document.getElementById("notes");
+function noteText(i){ var a=slides[i].querySelector("aside"); var t = a ? a.textContent.trim() : ""; return t || "(No notes in this copy.)"; }
+function renderNotes(){ if(notesEl.style.display==="block") notesEl.textContent=(cur+1)+" / "+slides.length+"   ·   step "+step+" of "+slides[cur]._steps.length+"\n\n"+noteText(cur); }
+var pw=null, t0=null;
+function openPresenter(){
+  pw=window.open("","janoPresenter","width=900,height=700"); if(!pw) return;
+  pw.document.open(); pw.document.write('<!doctype html><title>Presenter</title><body style="margin:0;background:#111;color:#eee;font:17px/1.5 Figtree,Arial,sans-serif"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#1d1d1d;font:700 20px Montserrat,Arial,sans-serif"><span id="pos"></span><span id="nx" style="font:500 15px Figtree,Arial;color:#aaa"></span><span id="tm" style="color:#E54B4B"></span></div><div id="nt" style="white-space:pre-wrap;padding:16px 20px"></div></body>'); pw.document.close();
+  pw.addEventListener("keydown", onKey); if(!t0) t0=Date.now(); syncPresenter();
+}
+function syncPresenter(){ if(!pw||pw.closed) return; var d=pw.document, j=nextIdx(cur,1);
+  var dm=demo[slides[cur].id]; d.getElementById("pos").textContent="Slide "+(cur+1)+" / "+slides.length+"  ·  step "+step+"/"+slides[cur]._steps.length+(dm&&dm.ready?"  ·  demo "+(dm.step||0)+"/"+(dm.total||"?"):"");
+  d.getElementById("nx").textContent= j>=0 ? "Next: "+slides[j].id : "End";
+  d.getElementById("nt").textContent=noteText(cur); }
+setInterval(function(){ if(pw&&!pw.closed&&t0){ var s=Math.floor((Date.now()-t0)/1000); pw.document.getElementById("tm").textContent=Math.floor(s/60)+":"+("0"+s%60).slice(-2); } },1000);
+
+/* settings */
+var panel=document.getElementById("panel");
+function openPanel(){
+  document.getElementById("s-base").value=CFG.base; document.getElementById("s-vw").value=CFG.vw; document.getElementById("s-skip").checked=CFG.skipHidden; document.getElementById("s-drive").checked=CFG.drive;
+  var rt=document.getElementById("s-scenes"); rt.innerHTML="";
+  Object.keys(META.live).forEach(function(id){ var l=document.createElement("label"); l.textContent="Demo scene on slide "+(META.order.indexOf(id)+1)+" ("+id+")"; var inp=document.createElement("input"); inp.type="text"; inp.id="s-sc-"+id; inp.value=CFG.scenes[id]||""; l.appendChild(inp); rt.appendChild(l); });
+  var lk=document.getElementById("s-links"); lk.innerHTML=""; var a=document.createElement("a"); a.href=CFG.base; a.target="_blank"; a.rel="noopener"; a.textContent="Open demo in new tab ↗"; lk.appendChild(a);
+  document.getElementById("ver").textContent="Deck build "+META.version+" · "+(LOCAL?"local copy":"online copy")+" · app: "+CFG.base;
+  panel.style.display="flex";
+}
+function closePanel(){ panel.style.display="none"; }
+document.getElementById("s-cancel").onclick=closePanel;
+document.getElementById("s-reset").onclick=function(){ try{ localStorage.removeItem(KEY); }catch(e){} CFG=load(); openPanel(); };
+document.getElementById("s-save").onclick=function(){
+  CFG.base=document.getElementById("s-base").value.trim()||CFG.base; CFG.vw=parseInt(document.getElementById("s-vw").value,10)||1440; CFG.skipHidden=document.getElementById("s-skip").checked; CFG.drive=document.getElementById("s-drive").checked;
+  Object.keys(META.live).forEach(function(id){ CFG.scenes[id]=document.getElementById("s-sc-"+id).value.trim(); });
+  try{ APP_ORIGIN=new URL(CFG.base).origin; }catch(e){}
+  save(CFG); closePanel(); loadAllLive(true);
+};
+
+/* input */
+var digits="", jumpEl=document.getElementById("jump"), jt=null, blankEl=document.getElementById("blank");
+function onKey(e){
+  if(panel.style.display==="flex"){ if(e.key==="Escape") closePanel(); return; }
+  var k=e.key;
+  if(blankEl.style.display==="block" && k!=="b" && k!=="B" && k!=="."){ blankEl.style.display="none"; e.preventDefault(); return; }
+  if(/^[0-9]$/.test(k)){ digits+=k; jumpEl.textContent="Go to "+digits; jumpEl.style.display="block"; clearTimeout(jt); jt=setTimeout(function(){digits="";jumpEl.style.display="none";},3000); e.preventDefault(); return; }
+  if(k==="Enter" && digits){ var n=parseInt(digits,10)-1; digits=""; jumpEl.style.display="none"; if(n>=0&&n<slides.length) show(n,{}); e.preventDefault(); return; }
+  if(k==="Escape"&&digits){ digits=""; jumpEl.style.display="none"; return; }
+  if(["ArrowRight","ArrowDown","PageDown"," ","Enter"].indexOf(k)>=0){ next(); e.preventDefault(); }
+  else if(["ArrowLeft","ArrowUp","PageUp","Backspace"].indexOf(k)>=0){ prev(); e.preventDefault(); }
+  else if(k==="b"||k==="B"||k==="."){ blankEl.style.display = blankEl.style.display==="block" ? "none" : "block"; }
+  else if(k==="Home"){ show(nextIdx(-1,1),{}); } else if(k==="End"){ show(nextIdx(slides.length,-1),{}); }
+  else if(k==="f"||k==="F"){ var de=document.documentElement; if(!document.fullscreenElement){ if(de.requestFullscreen) de.requestFullscreen().catch(function(){}); } else document.exitFullscreen(); }
+  else if(k==="n"||k==="N"){ notesEl.style.display = notesEl.style.display==="block" ? "none" : "block"; renderNotes(); }
+  else if(k==="p"||k==="P"){ openPresenter(); }
+  else if(k==="s"||k==="S"){ openPanel(); }
+  else if(k==="r"||k==="R"){ loadAllLive(true); }
+}
+addEventListener("keydown", onKey);
+addEventListener("blur", function(){ setTimeout(function(){ if(document.activeElement && document.activeElement.tagName==="IFRAME") liveFocus=true; },0); });
+stage.addEventListener("click", function(e){
+  if(e.target.closest("a,.live")) return;
+  if(liveFocus){ liveFocus=false; window.focus(); return; }
+  next();
+});
+var tx=null, ty=null;
+stage.addEventListener("touchstart", function(e){ if(e.target.closest(".live")) { tx=null; return; } tx=e.touches[0].clientX; ty=e.touches[0].clientY; }, {passive:true});
+stage.addEventListener("touchend", function(e){ if(tx===null) return; var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty; if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)){ if(dx<0) next(); else prev(); } tx=null; }, {passive:true});
+document.getElementById("nb-prev").onclick=function(e){ e.stopPropagation(); liveFocus=false; window.focus(); prev(); };
+document.getElementById("nb-next").onclick=function(e){ e.stopPropagation(); liveFocus=false; window.focus(); next(); };
+document.getElementById("nb-set").onclick=function(e){ e.stopPropagation(); openPanel(); };
+var navEl=document.getElementById("nav"), nt=null;
+addEventListener("mousemove", function(){ navEl.classList.add("show"); clearTimeout(nt); nt=setTimeout(function(){ navEl.classList.remove("show"); },2000); });
+
+/* start: load the demo frames at once, so the demo is ready before its slide */
+loadAllLive(false);
+var start = parseInt((location.hash||"#1").slice(1),10)-1; if(!(start>=0&&start<slides.length)) start=0; if(skipped(start)) start=nextIdx(start,1);
+show(start,{});
+})();
+</script>
+</body>
+</html>

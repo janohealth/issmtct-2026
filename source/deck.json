@@ -1,0 +1,74 @@
+{
+ "v": 4,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-07T09:00:00Z"
+ },
+ "lists": "css",
+ "title": "One Patient. Twenty Variables. One Clinical Story - How AI can make complex functional medicine manageable",
+ "cover": "T01",
+ "order": [
+  "T01",
+  "V1",
+  "V2",
+  "T02",
+  "SC",
+  "C1",
+  "CD",
+  "LD",
+  "SM",
+  "M1",
+  "MD",
+  "SG",
+  "G1",
+  "GD",
+  "SP",
+  "P1",
+  "P2",
+  "Z1",
+  "A1-limits",
+  "A2-runofshow",
+  "R1-map"
+ ],
+ "sections": {
+  "s1": {
+   "description": "One patient, twenty variables, three pillars",
+   "start": "T01"
+  },
+  "s2": {
+   "description": "Clinical: your protocol, in your team's hands",
+   "start": "SC"
+  },
+  "s3": {
+   "description": "Communication: the right person answers, with context",
+   "start": "SM"
+  },
+  "s4": {
+   "description": "Growth: patients drift; missed visits get an owner",
+   "start": "SG"
+  },
+  "s5": {
+   "description": "Partners: protocols from everyone you work with, in one clinic library",
+   "start": "SP"
+  },
+  "s6": {
+   "description": "Two asks and one QR code",
+   "start": "Z1"
+  },
+  "s7": {
+   "description": "Reference for questions, not presented",
+   "start": "A1-limits"
+  }
+ },
+ "faces": {
+  "montserrat": {
+   "family": "Montserrat",
+   "href": "https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap"
+  },
+  "figtree": {
+   "family": "Figtree",
+   "href": "https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap"
+  }
+ },
+ "designSystems": []
+}

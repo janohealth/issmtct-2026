@@ -1,0 +1,11 @@
+{
+  "title": "ISSMTCT 2026 · Jano Health",
+  "shortName": "ISSMTCT",
+  "artifact": "https://claude.ai/artifact/HhxHYNWPUyPjFbev7hQnjb",
+  "appOnline": "https://jano-functional.pages.dev/",
+  "appLocal": "http://127.0.0.1:4173/",
+  "notes": "strip",
+  "live": {
+    "LD": { "scene": "clinical", "panel": [144, 204] }
+  }
+}
