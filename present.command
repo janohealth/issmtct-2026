@@ -17,8 +17,12 @@ APP_SERVE="npm run preview -- --host 127.0.0.1 --port $APP_PORT --strictPort"
 
 say_step() { printf "\n\033[1m%s\033[0m\n" "$1"; }
 up() { curl -s -o /dev/null --max-time 1 "$1"; }
-PIDS=()
-cleanup() { for p in "${PIDS[@]}"; do kill "$p" 2>/dev/null; done; echo; echo "Stopped."; }
+PIDS=(); STARTED_PORTS=()
+cleanup() {
+  for p in "${PIDS[@]}"; do pkill -TERM -P "$p" 2>/dev/null; kill "$p" 2>/dev/null; done
+  for port in "${STARTED_PORTS[@]}"; do lsof -ti "tcp:$port" -sTCP:LISTEN 2>/dev/null | xargs kill 2>/dev/null; done
+  echo; echo "Stopped."
+}
 trap cleanup EXIT INT TERM
 
 say_step "1/5 Get the latest deck"
@@ -38,10 +42,10 @@ say_step "3/5 Build the app"
 
 say_step "4/5 Start the app and the deck"
 if up "http://127.0.0.1:$APP_PORT/"; then echo "The app is already running on port $APP_PORT."; else
-  (cd "$APP_DIR" && eval "$APP_SERVE" > /tmp/jano-app.log 2>&1) & PIDS+=($!)
+  (cd "$APP_DIR" && eval "$APP_SERVE" > /tmp/jano-app.log 2>&1) & PIDS+=($!); STARTED_PORTS+=("$APP_PORT")
 fi
 if up "http://127.0.0.1:$DECK_PORT/"; then echo "The deck is already running on port $DECK_PORT."; else
-  node "$DECK_DIR/scripts/serve.mjs" "$DECK_DIR/docs" "$DECK_PORT" > /tmp/jano-deck.log 2>&1 & PIDS+=($!)
+  node "$DECK_DIR/scripts/serve.mjs" "$DECK_DIR/docs" "$DECK_PORT" > /tmp/jano-deck.log 2>&1 & PIDS+=($!); STARTED_PORTS+=("$DECK_PORT")
 fi
 for i in $(seq 1 40); do up "http://127.0.0.1:$APP_PORT/" && up "http://127.0.0.1:$DECK_PORT/" && break; sleep 0.5; done
 up "http://127.0.0.1:$APP_PORT/" && echo "App:  http://127.0.0.1:$APP_PORT/  OK" || echo "App did not start. See /tmp/jano-app.log"
