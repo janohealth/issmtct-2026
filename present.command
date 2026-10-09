@@ -16,6 +16,7 @@ APP_CACHE="$HOME/Jano Health/.issmtct-app"
 APP_PORT=4173
 DECK_PORT=4174
 [ -f "$DECK_DIR/present.config" ] && source "$DECK_DIR/present.config"
+export GIT_TERMINAL_PROMPT=0   # never stop to ask for a password on stage
 
 say_step() { printf "\n\033[1m%s\033[0m\n" "$1"; }
 up() { curl -s -o /dev/null --max-time 1 "$1"; }
