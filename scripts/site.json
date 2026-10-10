@@ -6,6 +6,6 @@
   "appLocal": "http://127.0.0.1:4173/",
   "notes": "strip",
   "live": {
-    "LD": { "scene": "clinical", "panel": [144, 204] }
+    "LD": { "scene": "clinical", "panel": [72, 104] }
   }
 }
