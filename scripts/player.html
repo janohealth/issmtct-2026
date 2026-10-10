@@ -297,6 +297,22 @@ document.getElementById("nb-set").onclick=function(e){ e.stopPropagation(); open
 var navEl=document.getElementById("nav"), nt=null;
 addEventListener("mousemove", function(){ navEl.classList.add("show"); clearTimeout(nt); nt=setTimeout(function(){ navEl.classList.remove("show"); },2000); });
 
+/* iPhone remote (local copy only): scripts/remote.mjs on port 4175 */
+if(LOCAL && window.EventSource){
+  var RURL="http://127.0.0.1:4175";
+  var stitle=function(i){ if(i<0) return ""; var h=slides[i].querySelector("h1,h2"); return (h?h.innerHTML.replace(/<br\s*\/?>/gi," ").replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").replace(/&nbsp;/g," "):slides[i].id).replace(/\s+/g," ").trim(); };
+  var report=function(){ var j=nextIdx(cur,1); try{ fetch(RURL+"/deck-state",{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({cur:cur,total:slides.length,title:stitle(cur),next:stitle(j),live:isLive(cur),black:blankEl.style.display==="block"})}).catch(function(){}); }catch(e){} };
+  var es=new EventSource(RURL+"/deck-events");
+  es.onopen=report;
+  es.onmessage=function(e){ var c=e.data;
+    if(blankEl.style.display==="block" && c!=="black"){ blankEl.style.display="none"; }
+    else if(c==="next") next(); else if(c==="prev") prev();
+    else if(c==="black") blankEl.style.display = blankEl.style.display==="block" ? "none" : "block";
+    else if(/^go:\d+$/.test(c)){ var n=parseInt(c.slice(3),10)-1; if(n>=0&&n<slides.length) show(n,{}); }
+    report(); };
+  var _upd=updateUI; updateUI=function(){ _upd(); report(); };
+}
+
 /* start: load the demo frames at once, so the demo is ready before its slide */
 loadAllLive(false);
 var start = parseInt((location.hash||"#1").slice(1),10)-1; if(!(start>=0&&start<slides.length)) start=0; if(skipped(start)) start=nextIdx(start,1);

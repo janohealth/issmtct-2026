@@ -879,7 +879,7 @@ svg.xi{display:block;flex:none}
 <script>
 (function(){
 "use strict";
-var META = {"order": ["T01", "V1", "V2", "T02", "SC", "C1", "SM", "M1", "MD", "SG", "G1", "GD", "LD", "SP", "P1", "P2", "PH", "Z1", "A1-limits", "A2-runofshow", "R1-map"], "live": {"LD": {"scene": "clinical", "panel": [144, 204]}}, "appLocal": "http://127.0.0.1:4173/", "appOnline": "https://jano-functional.pages.dev/", "version": "2026-10-10 10:31 UTC \u00b7 d444c76"};
+var META = {"order": ["T01", "V1", "V2", "T02", "SC", "C1", "SM", "M1", "MD", "SG", "G1", "GD", "LD", "SP", "P1", "P2", "PH", "Z1", "A1-limits", "A2-runofshow", "R1-map"], "live": {"LD": {"scene": "clinical", "panel": [144, 204]}}, "appLocal": "http://127.0.0.1:4173/", "appOnline": "https://jano-functional.pages.dev/", "version": "2026-10-10 11:11 UTC \u00b7 d444c76"};
 var LOCAL = /^(127\.0\.0\.1|localhost|\[::1\])$/.test(location.hostname);
 var DEF = {base: LOCAL ? META.appLocal : META.appOnline, vw: 1440, drive: true, skipHidden: true, showBadge: false, scenes: {}};
 Object.keys(META.live).forEach(function(id){ DEF.scenes[id] = META.live[id].scene || ""; });
@@ -1093,6 +1093,22 @@ document.getElementById("nb-next").onclick=function(e){ e.stopPropagation(); liv
 document.getElementById("nb-set").onclick=function(e){ e.stopPropagation(); openPanel(); };
 var navEl=document.getElementById("nav"), nt=null;
 addEventListener("mousemove", function(){ navEl.classList.add("show"); clearTimeout(nt); nt=setTimeout(function(){ navEl.classList.remove("show"); },2000); });
+
+/* iPhone remote (local copy only): scripts/remote.mjs on port 4175 */
+if(LOCAL && window.EventSource){
+  var RURL="http://127.0.0.1:4175";
+  var stitle=function(i){ if(i<0) return ""; var h=slides[i].querySelector("h1,h2"); return (h?h.innerHTML.replace(/<br\s*\/?>/gi," ").replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").replace(/&nbsp;/g," "):slides[i].id).replace(/\s+/g," ").trim(); };
+  var report=function(){ var j=nextIdx(cur,1); try{ fetch(RURL+"/deck-state",{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({cur:cur,total:slides.length,title:stitle(cur),next:stitle(j),live:isLive(cur),black:blankEl.style.display==="block"})}).catch(function(){}); }catch(e){} };
+  var es=new EventSource(RURL+"/deck-events");
+  es.onopen=report;
+  es.onmessage=function(e){ var c=e.data;
+    if(blankEl.style.display==="block" && c!=="black"){ blankEl.style.display="none"; }
+    else if(c==="next") next(); else if(c==="prev") prev();
+    else if(c==="black") blankEl.style.display = blankEl.style.display==="block" ? "none" : "block";
+    else if(/^go:\d+$/.test(c)){ var n=parseInt(c.slice(3),10)-1; if(n>=0&&n<slides.length) show(n,{}); }
+    report(); };
+  var _upd=updateUI; updateUI=function(){ _upd(); report(); };
+}
 
 /* start: load the demo frames at once, so the demo is ready before its slide */
 loadAllLive(false);

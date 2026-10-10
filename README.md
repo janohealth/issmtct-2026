@@ -37,6 +37,14 @@ Manual steps for an agent:
 
 The first time only: right-click `present.command` › Open (macOS asks to confirm). The Mac needs Node.js and git access to `janohealth/jano-ehr-prototype`. Settings are in `present.config`.
 
+## iPhone as the clicker (MacBook, local copy)
+
+1. On the iPhone, turn on Personal Hotspot. Join it from the MacBook.
+2. Run `present.command`. Step 4/5 prints a QR code.
+3. Scan the QR code with the iPhone camera. The remote opens: Next, Back, Black, slide number, current and next slide title, and a timer.
+4. The link has a new secret key every run. Only next, back and black screen are possible from the phone. The app and the deck stay on 127.0.0.1.
+5. If macOS asks to allow incoming connections for node, click Allow. To switch the remote off, set `REMOTE=0` in `present.config`.
+
 ## Present on the iPad (online)
 
 1. Open https://janohealth.github.io/issmtct-2026/ in Safari.
